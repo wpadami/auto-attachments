@@ -3,7 +3,7 @@
 Plugin Name: Auto Attachments
 Plugin URI: https://github.com/wpadami/auto-attachments
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4 
-Version: 0.9.0
+Version: 0.10.0
 Author: Serkan Algur
 Author URI: https://github.com/serkanalgur
 License: GPLv2 or later
@@ -39,8 +39,6 @@ add_action('init', 'multilingual_aa');
 include 'admin/metaboxes.php';
 //Call Shortcode
 include 'admin/shortcodes.php';
-//Call Rebuild
-include 'admin/rebuild.php';
 
 //ACTIVATE (MULTISITES)
 register_activation_hook(__FILE__, 'aa_install');
