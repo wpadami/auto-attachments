@@ -18,12 +18,11 @@ $opts = get_option('auto_attachments_options');
 						<p style="padding:5px;">
 							<img src="http://www.gravatar.com/avatar/d9e0fb92795db0ad96cf2b37bf0fc042.png" align="right" style="width:80px;height:80px;padding:2px;"><br /><strong>Serkan Algur</strong>
 								<ul style="padding:5px;">
-									<li><a href="http://www.kaisercrazy.com" target="_blank"><?php _e('Personal Blog (Turkish)', 'autoa'); ?></a></li>
+									<li><a href="https://github.com/wpadami/auto-attachments" target="_blank"><?php _e('Project on GitHub', 'autoa'); ?></a></li>
+									<li><a href="https://github.com/serkanalgur" target="_blank"><?php _e('Author on GitHub', 'autoa'); ?></a></li>
 									<li><a href="http://www.wpfunc.com" target="_blank"><?php _e('WpFunC (functions share)', 'autoa'); ?></a></li>
 									<li><a href="http://facebook.com/serkan.algur" target="_blank"><?php _e('Facebook', 'autoa'); ?></a></li>
 									<li><a href="https://twitter.com/kaisercrazy" class="twitter-follow-button" data-show-count="true" data-lang="tr" data-show-screen-name="false"></a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></li>
-									<li><a href="http://www.friendfeed.com/kaisercrazy" target="_blank"><?php _e('Friendfeed', 'autoa'); ?></a></li>
-									<li><a href="mailto:info@kaisercrazy.com"><?php _e('Email Me', 'autoa'); ?></a></li>
 								</ul>
 						</p>
 					</div>

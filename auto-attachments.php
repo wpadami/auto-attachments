@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Auto Attachments
-Plugin URI: http://www.kaisercrazy.com/cms-sistemleri/wordpress/auto-attachments-0-7.html
+Plugin URI: https://github.com/wpadami/auto-attachments
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4 
 Version: 0.7.1
 Author: Serkan Algur
-Author URI: http://www.kaisercrazy.com
+Author URI: https://github.com/serkanalgur
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
