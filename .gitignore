@@ -162,4 +162,8 @@ pip-log.txt
 # Mac crap
 .DS_Store
 claude.md
+
+# Composer (dev tooling only - runtime uses its own autoloader)
+/vendor/
+composer.lock
 .claude
