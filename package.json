@@ -1,0 +1,14 @@
+{
+    "name": "auto-attachments",
+    "version": "0.11.0",
+    "description": "Admin settings UI build for the Auto Attachments WordPress plugin.",
+    "private": true,
+    "scripts": {
+        "build": "wp-scripts build src/admin/index.js --output-path=build/admin",
+        "start": "wp-scripts start src/admin/index.js --output-path=build/admin",
+        "lint:js": "wp-scripts lint-js src"
+    },
+    "devDependencies": {
+        "@wordpress/scripts": "^30.0.0"
+    }
+}

@@ -167,3 +167,13 @@ claude.md
 /vendor/
 composer.lock
 .claude
+
+# Node (build tooling only - build/ output is committed since there's no CI build step yet)
+/node_modules/
+npm-debug.log*
+
+# The generic Python "build" rule above (leftover boilerplate, unrelated to
+# this plugin) would otherwise swallow our committed @wordpress/scripts
+# output - un-ignore it explicitly.
+!/build/
+!/build/**

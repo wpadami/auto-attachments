@@ -33,13 +33,13 @@ class Plugin {
 	 * Register hooks for OOP-based subsystems as they're added.
 	 */
 	public function init(): void {
-		$options = get_option( 'auto_attachments_options' );
-		$options = is_array( $options ) ? $options : array();
-
-		$lightbox = new Lightbox( $options );
+		$lightbox = new Lightbox( Settings::values() );
 		$lightbox->register_hooks();
 
 		$this->gallery_renderer = new GalleryRenderer( $lightbox );
+
+		( new SettingsRestController() )->register_hooks();
+		( new SettingsPage() )->register_hooks();
 	}
 
 	/**
