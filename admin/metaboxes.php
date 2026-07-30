@@ -1,8 +1,6 @@
 <?php
 // Stop direct call
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-				die('You are not allowed to call this page directly.');
-}
+defined('ABSPATH') || exit;
 
 //Metabox For Pages
 add_action('admin_init','aa_meta_init');

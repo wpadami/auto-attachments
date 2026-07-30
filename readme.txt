@@ -67,6 +67,13 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.7.1 =
+* Security: settings save now verifies the nonce that was already being rendered, and requires `manage_options`.
+* Security: admin menu registration switched from a legacy numeric role level to the `manage_options` capability.
+* Security: all admin settings output escaped; `checked()`/`selected()` used instead of translating raw HTML strings.
+* Security: AJAX handlers (thumbnail rebuild, shortcode-panel attachment picker) now check nonces and capabilities before acting.
+* Fix: removed `create_function()` (removed in PHP 8.0) and the PHP4-style class constructor in the thumbnail rebuilder, both of which broke that feature under PHP 8.
+
 = Version 0.7 =
 * Tested with WordPress 3.5.1. Working!
 * Admin area jQuery UI upgraded
