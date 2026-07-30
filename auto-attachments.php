@@ -3,16 +3,14 @@
 Plugin Name: Auto Attachments
 Plugin URI: http://www.kaisercrazy.com/cms-sistemleri/wordpress/auto-attachments-0-7.html
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4 
-Version: 0.7
+Version: 0.7.1
 Author: Serkan Algur
 Author URI: http://www.kaisercrazy.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 // Stop direct call
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-				die('You are not allowed to call this page directly.');
-}
+defined('ABSPATH') || exit;
 function multilingual_aa( ) {
 				// Internationalization, first(!)
 				load_plugin_textdomain('autoa', false, dirname(plugin_basename(__FILE__)) . '/languages');
@@ -164,30 +162,59 @@ if ($opts['use_colorbox'] == 'yes') {
 //Custom Admin Area Settinngs
 add_action('admin_menu', 'aa_admin_page');
 function aa_admin_page( ) {
-				$page = add_menu_page(__('Auto Attachments', 'autoa'), __('Auto Attachments', 'autoa'), '10', 'auto_attachments', 'aa_settings', plugins_url('auto-attachments/includes/images/aamenu.png'));
+				$page = add_menu_page(__('Auto Attachments', 'autoa'), __('Auto Attachments', 'autoa'), 'manage_options', 'auto_attachments', 'aa_settings', plugins_url('auto-attachments/includes/images/aamenu.png'));
 				add_action('admin_print_scripts-'.$page , 'admin_aa_scripts');
 				add_action('admin_print_styles', 'admin_aa_styles');
 }
 
 
 function aa_settings( ) {
-				global $_POST, $wpdb;
+				global $wpdb;
 				//Update Option (Changed with 0.5 [Multisite Supp.])
-				if ($_POST['serkoup'] == 'uppo') {
+				if (isset($_POST['serkoup']) && $_POST['serkoup'] == 'uppo') {
+					check_admin_referer('update-options');
+					if (!current_user_can('manage_options')) {
+						wp_die(esc_html__('You do not have permission to change these settings.', 'autoa'));
+					}
 					//Form data sent
-					$a_new = $_POST['autoa'];
+					$a_new = isset($_POST['autoa']) ? wp_unslash($_POST['autoa']) : array();
 					$a_old = get_option('auto_attachments_options');
-					$check_opt = array ('mp3_listen','video_watch','before_title','show_b_title','showmp3info','showvideoinfo','galeri','thw','thh','tbhw','tbhh','fhw','fhh','jhw','jhh','page_ok','category_ok','use_colorbox','homepage_ok','listview','newwindow','jwskin','slimstyle','galstyle');
-					foreach ($check_opt as $aa) {
-						$a_old[$aa] = $a_new[$aa] ? $a_old[$aa] : $a_new[$aa];
+
+					$text_fields  = array('mp3_listen', 'video_watch', 'before_title');
+					$yesno_fields = array('show_b_title', 'showmp3info', 'showvideoinfo', 'galeri', 'page_ok', 'category_ok', 'use_colorbox', 'homepage_ok', 'listview', 'newwindow');
+					$int_fields   = array('thw', 'thh', 'tbhw', 'tbhh', 'fhw', 'fhh', 'jhw', 'jhh');
+					$style_fields = array('galstyle' => array('light', 'dark'), 'slimstyle' => array('light', 'dark'));
+					$jwskins      = array('default', 'darkrv5', 'facebook', 'lightrv5', 'modieus', 'nemesis', 'newtube', 'newtubedark');
+
+					foreach ($text_fields as $field) {
+						if (isset($a_new[$field])) {
+							$a_old[$field] = sanitize_text_field($a_new[$field]);
 						}
-							update_option( 'auto_attachments_options', $a_new);
-							echo '<div id="message" class="updated fade"><p><strong>' . __('Settings saved.') . '</strong></p></div>';
+					}
+					foreach ($yesno_fields as $field) {
+						$a_old[$field] = (isset($a_new[$field]) && $a_new[$field] == 'yes') ? 'yes' : 'no';
+					}
+					foreach ($int_fields as $field) {
+						if (isset($a_new[$field])) {
+							$a_old[$field] = absint($a_new[$field]);
+						}
+					}
+					foreach ($style_fields as $field => $choices) {
+						if (isset($a_new[$field]) && in_array($a_new[$field], $choices, true)) {
+							$a_old[$field] = $a_new[$field];
+						}
+					}
+					if (isset($a_new['jwskin']) && in_array($a_new['jwskin'], $jwskins, true)) {
+						$a_old['jwskin'] = $a_new['jwskin'];
+					}
+
+					update_option( 'auto_attachments_options', $a_old);
+					echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Settings saved.', 'autoa') . '</strong></p></div>';
 					}
 				//Start to write admin area
 				include 'admin/admin-area.php'; //I included because HTML Codes too Mainstream :)
 				//Admin area finish
-				
+
 }
 $opts = get_option('auto_attachments_options');
 add_image_size('aa_big', $opts['tbhw'], $opts['tbhh']);

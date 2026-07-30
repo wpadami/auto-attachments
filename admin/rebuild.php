@@ -1,11 +1,9 @@
 <?php
 
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-				die('You are not allowed to call this page directly.');
-}
+defined('ABSPATH') || exit;
 
 class aARebuild {
-	function aARebuild() {
+	function __construct() {
 		add_action( 'admin_menu', array($this, 'rebuildmenu') );
 	}
 	function rebuildmenu() {
@@ -20,6 +18,8 @@ class aARebuild {
 		<div id="message" class="updated fade" style="display:none"></div>
 		<script type="text/javascript">
 		// <![CDATA[
+
+		var aaRebuildNonce = "<?php echo esc_js( wp_create_nonce( 'aa_rebuild_thumbnails' ) ); ?>";
 
 		function setMessage(msg) {
 			jQuery("#message").html(msg);
@@ -43,7 +43,7 @@ class aARebuild {
 			jQuery.ajax({
 				url: "<?php echo admin_url('admin-ajax.php'); ?>",
 				type: "POST",
-				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured="+onlyfeatured,
+				data: "action=ajax_thumbnail_rebuild&do=getlist&onlyfeatured="+onlyfeatured+"&nonce="+aaRebuildNonce,
 				success: function(result) {
 					var list = eval(result);
 					var curr = 0;
@@ -65,7 +65,7 @@ class aARebuild {
 						jQuery.ajax({
 							url: "<?php echo admin_url('admin-ajax.php'); ?>",
 							type: "POST",
-							data: "action=ajax_thumbnail_rebuild&do=regen&id=" + list[curr].id + thumbnails,
+							data: "action=ajax_thumbnail_rebuild&do=regen&id=" + list[curr].id + thumbnails + "&nonce=" + aaRebuildNonce,
 							success: function(result) {
 								jQuery("#thumb").show();
 								jQuery("#thumb-img").attr("src",result);
@@ -126,11 +126,12 @@ class aARebuild {
 
 
 function ajax_thumbnail_rebuild_ajax() {
-	global $wpdb;
-	
-	$action = $_POST["do"];
-	$thumbnails = isset( $_POST['thumbnails'] )? $_POST['thumbnails'] : NULL;
-	$onlyfeatured = isset( $_POST['onlyfeatured'] ) ? $_POST['onlyfeatured'] : 0;
+	if ( ! check_ajax_referer( 'aa_rebuild_thumbnails', 'nonce', false ) || ! current_user_can( 'manage_options' ) ) {
+		wp_die( '-1', '', array( 'response' => 403 ) );
+	}
+
+	$action = isset( $_POST['do'] ) ? sanitize_key( $_POST['do'] ) : '';
+	$thumbnails = isset( $_POST['thumbnails'] ) ? array_map( 'sanitize_key', (array) $_POST['thumbnails'] ) : NULL;
 
 	if ($action == "getlist") {
 			$attachments =& get_children( array(
@@ -145,9 +146,9 @@ function ajax_thumbnail_rebuild_ajax() {
 			    $res[] = array('id' => $attachment->ID, 'title' => $attachment->post_title);
 			}
 
-		die( json_encode($res) );
+		die( wp_json_encode($res) );
 	} else if ($action == "regen") {
-		$id = $_POST["id"];
+		$id = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
 
 		$fullsizepath = get_attached_file( $id );
 
@@ -161,7 +162,10 @@ function ajax_thumbnail_rebuild_ajax() {
 }
 add_action('wp_ajax_ajax_thumbnail_rebuild', 'ajax_thumbnail_rebuild_ajax');
 
-add_action( 'plugins_loaded', create_function( '', 'global $aARebuild; $aARebuild = new aARebuild();' ) );
+add_action( 'plugins_loaded', function() {
+	global $aARebuild;
+	$aARebuild = new aARebuild();
+} );
 
 function ajax_thumbnail_rebuild_get_sizes() {
 	global $_wp_additional_image_sizes;

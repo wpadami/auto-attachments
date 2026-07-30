@@ -1,8 +1,6 @@
 <?php
 // Stop direct call
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-				die('You are not allowed to call this page directly.');
-}
+defined('ABSPATH') || exit;
 //Shortcodes First
 add_action('media_buttons', 'auto_attachments_shortcodes', 11);
 add_action('admin_footer', 'aa_sh_content');
@@ -254,25 +252,26 @@ function button_js() {
 add_action('wp_ajax_ex_aa', 'ex_aa_callback');
 
 function ex_aa_callback() {
-	global $wpdb; 
-	$nonce = $_POST['nonce'];
-	$post_id = $_POST['post_id'];
-	$post_meta = $_POST['post_meta'];
-	$durum = $_POST['durum'];
-	if (!wp_verify_nonce($nonce,'ajax-nonce')){  
-		die ( 'Busted!');} else {
-			if ($durum == "resim") {
-				update_post_meta($post_id,'ex_rsm',$post_meta);
-			}
-			if ($durum == "muzik") {
-				update_post_meta($post_id,'ex_muz',$post_meta);
-			} 
-			if ($durum == "video") {
-				update_post_meta($post_id,'ex_vid',$post_meta);
-			}
-			if ($durum == "dosya"){
-				update_post_meta($post_id,'ex_dosya',$post_meta);
-			}
+	$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( $_POST['nonce'] ) : '';
+	$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+	$post_meta = isset( $_POST['post_meta'] ) ? sanitize_text_field( wp_unslash( $_POST['post_meta'] ) ) : '';
+	$durum = isset( $_POST['durum'] ) ? sanitize_key( $_POST['durum'] ) : '';
+
+	if ( ! wp_verify_nonce( $nonce, 'ajax-nonce' ) || ! current_user_can( 'edit_post', $post_id ) ) {
+		die( 'Busted!' );
+	}
+
+	if ($durum == "resim") {
+		update_post_meta($post_id,'ex_rsm',$post_meta);
+	}
+	if ($durum == "muzik") {
+		update_post_meta($post_id,'ex_muz',$post_meta);
+	}
+	if ($durum == "video") {
+		update_post_meta($post_id,'ex_vid',$post_meta);
+	}
+	if ($durum == "dosya"){
+		update_post_meta($post_id,'ex_dosya',$post_meta);
 	}
 	die();
 }
@@ -280,9 +279,13 @@ function ex_aa_callback() {
 add_action('wp_ajax_get_imgs', 'ex_getimgs');
 
 function ex_getimgs() {
-	global $wpdb; 
-	$post_id = $_GET['post_id'];
-	$postmim = $_GET['postmim'];
+	$post_id = isset( $_GET['post_id'] ) ? absint( $_GET['post_id'] ) : 0;
+	$postmim = isset( $_GET['postmim'] ) ? sanitize_text_field( $_GET['postmim'] ) : '';
+
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		die( wp_json_encode( array() ) );
+	}
+
 	$args = array(
 	'post_type'=> 'attachment',
 	'post_parent'=> $post_id,
@@ -299,7 +302,7 @@ function ex_getimgs() {
 		$ret[] = array('id' => '-', 'post_name' => 'Nope');
 	}
 	    $output = $ret;
-		echo json_encode($output);
+		echo wp_json_encode($output);
 	die();
 }
 
