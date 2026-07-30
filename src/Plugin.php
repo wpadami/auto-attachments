@@ -40,6 +40,7 @@ class Plugin {
 
 		( new SettingsRestController() )->register_hooks();
 		( new SettingsPage() )->register_hooks();
+		( new Block() )->register_hooks();
 	}
 
 	/**

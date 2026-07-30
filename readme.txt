@@ -67,6 +67,11 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.12.0 =
+* Added a block editor block ("Attachment List (Auto Attachments)") for inserting file, image, audio, or video attachment lists - the block-editor equivalent of the `[imageaa]`/`[filesaa]`/`[musicaa]`/`[videoaa]` shortcodes, which keep working unchanged alongside it.
+* The block is dynamic (server-rendered) and reuses the exact same rendering functions as the shortcodes, so there's one implementation, not a second copy.
+* Fixed a bug in `getimages_aa()`/`getfiles_aa()`/`getmusic_aa()`/`getvideo_aa()`: they gated rendering on an internal "exclude from automatic listing" post-meta value instead of the shortcode's own `id` attribute, which only happened to work when the shortcode panel's AJAX call had run first. Also fixed an unrelated undefined-variable bug in `getfiles_aa()`'s file link.
+
 = Version 0.11.0 =
 * Rebuilt the admin settings page on WordPress's native React stack (`wp-element`/`wp-components`/`wp-api-fetch`, all bundled with WP core) instead of the old jQuery UI accordion form.
 * Settings now read/write through a REST API (`auto-attachments/v1/settings`, `manage_options`-gated, validated `args` schema) instead of a raw `$_POST` form submit.
