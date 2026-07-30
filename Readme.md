@@ -32,7 +32,7 @@ With new admin area (0.5.3 - [look screenshots](#screenshots) options were group
 More Changes? [Look At Changelog](#changelog)
 Some FAQ Added [FAQ](#frequently-asked-questions)
 
-Plugin is multilingual. If you translate [please contact me](mailto:info@kaisercrazy.com) and send files. Türkçe (Turkish) bilgi için : [KaiseRCrazY, Serkan Algur](http://www.kaisercrazy.com)
+Plugin is multilingual. If you translate please open an issue on [GitHub](https://github.com/wpadami/auto-attachments) and share your files. Türkçe (Turkish) bilgi için : [Serkan Algur](https://github.com/serkanalgur)
 
 
 ## Installation
