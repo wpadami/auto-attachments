@@ -16,6 +16,9 @@ class Plugin {
 	 */
 	private static $instance = null;
 
+	/** @var GalleryRenderer|null */
+	private $gallery_renderer;
+
 	public static function instance(): self {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -30,6 +33,24 @@ class Plugin {
 	 * Register hooks for OOP-based subsystems as they're added.
 	 */
 	public function init(): void {
-		// Future OOP subsystems (renderers, settings service, etc.) hook in here.
+		$options = get_option( 'auto_attachments_options' );
+		$options = is_array( $options ) ? $options : array();
+
+		$lightbox = new Lightbox( $options );
+		$lightbox->register_hooks();
+
+		$this->gallery_renderer = new GalleryRenderer( $lightbox );
+	}
+
+	/**
+	 * Shared image-gallery renderer, used by both the automatic attachment
+	 * listing and the [imageaa] shortcode until those are fully migrated
+	 * off the procedural code that currently calls this.
+	 */
+	public function gallery_renderer(): GalleryRenderer {
+		if ( null === $this->gallery_renderer ) {
+			$this->init();
+		}
+		return $this->gallery_renderer;
 	}
 }

@@ -97,7 +97,7 @@ $opts = get_option('auto_attachments_options');
 				<h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all"><a href="#"><?php _e('<strong>Gallery Settings</strong>', 'autoa'); ?></a></h3>
 					<div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
 						<p><strong><?php _e('Show Gallery?', 'autoa'); ?></strong></p>
-							<span style="font-size: 10px;text-align:justify;"><em><?php _e('You can use gallery for show your image attachments without any plugin or else :) Also if you use colorbox or any other gallery lihtbox plugin yopu can disable colorbox usage.', 'autoa'); ?></em></span><br />
+							<span style="font-size: 10px;text-align:justify;"><em><?php _e('You can use gallery for show your image attachments without any plugin or else :) Also if you use another gallery lightbox plugin you can disable the bundled lightbox.', 'autoa'); ?></em></span><br />
 						<span id="radio4"><input type="radio" id="galeri_yes" name="autoa[galeri]" value="yes" <?php checked($opts['galeri'], 'yes'); ?> />
 							<label for="galeri_yes"><?php _e('Yes', 'autoa'); ?></label>
 							<input type="radio" id="galeri_no" name="autoa[galeri]" value="no" <?php checked($opts['galeri'], 'no'); ?>/>
@@ -113,12 +113,12 @@ $opts = get_option('auto_attachments_options');
 											<option value="<?php echo esc_attr($gls); ?>" <?php selected($gyl, $gls); ?> /><?php echo esc_html($gls); ?></option>
 										<?php } ?>
 									</select>
-						<p><strong><?php _e('Use Slimbox?', 'autoa'); ?></strong></p>
+						<p><strong><?php _e('Use Lightbox?', 'autoa'); ?></strong></p>
 						<span id="radio5"><input type="radio" id="use_colorbox_yes" name="autoa[use_colorbox]" value="yes" <?php checked($opts['use_colorbox'], 'yes'); ?> />
 							<label for="use_colorbox_yes"><?php _e('Yes', 'autoa'); ?></label>
 							<input type="radio" id="use_colorbox_no" name="autoa[use_colorbox]" value="no" <?php checked($opts['use_colorbox'], 'no'); ?>/>
 							<label for="use_colorbox_no"><?php _e('No', 'autoa'); ?></label>
-						</span><label><?php _e('Select Slimbox Color Style', 'autoa'); ?></label>
+						</span><label><?php _e('Select Lightbox Color Style', 'autoa'); ?></label>
 							<?php $slsy = array("light","dark");
 										$syl = $opts['slimstyle'];
 								?>

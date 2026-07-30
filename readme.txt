@@ -67,6 +67,12 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.9.0 =
+* Replaced the Slimbox2 (jQuery) gallery lightbox with a small first-party, dependency-free vanilla-JS lightbox (`includes/js/aa-lightbox.js`).
+* Extracted `AutoAttachments\Lightbox` and `AutoAttachments\GalleryRenderer` classes, converging the gallery-rendering HTML that used to be duplicated between the automatic attachment listing and the `[imageaa]` shortcode.
+* Removed the unused `includes/js/colorbox/` assets (already dead since Slimbox2 replaced Colorbox in v0.6) and the old `includes/js/slimbox/` assets.
+* Renamed the "Use Slimbox?" / "Select Slimbox Color Style" admin labels to "Use Lightbox?" / "Select Lightbox Color Style" to match; the underlying settings (`use_colorbox`, `slimstyle`) are unchanged.
+
 = Version 0.8.1 =
 * Added `composer.json` (PSR-4 autoload map, PHPCS dev dependency) and a lightweight runtime autoloader for the new `AutoAttachments\` namespace, plus a `src/Plugin.php` bootstrap class. No behavior change - this is scaffolding for moving new/touched code to an OOP structure going forward.
 
