@@ -3,7 +3,7 @@
 Plugin Name: Auto Attachments
 Plugin URI: http://www.kaisercrazy.com/cms-sistemleri/wordpress/auto-attachments-0-7.html
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4 
-Version: 0.7.1
+Version: 0.8.0
 Author: Serkan Algur
 Author URI: http://www.kaisercrazy.com
 License: GPLv2 or later
@@ -68,7 +68,6 @@ function _aa_install() {
 				'homepage_ok' 	=> 'no',
 				'listview' 		=> 'no',
 				'newwindow' 	=> 'no',
-				'jwskin' 		=> '',
 				'slimstyle' 	=> 'light',
 				'galstyle' 		=> 'light'
 				);
@@ -124,8 +123,7 @@ add_action('wp_head', 'addHeaderCode');
 function addHeaderCode( ) {
 				$opts = get_option('auto_attachments_options');
 				$urlp = plugins_url('/auto-attachments');
-				echo '<link type="text/css" rel="stylesheet" href="' . $urlp . '/a-a.css" />' . "\n";
-				echo '<script language="javascript" type="text/javascript" src="' . $urlp . '/includes/jw/swfobject.js"></script>'."\n";
+				echo '<link type="text/css" rel="stylesheet" href="' . esc_url($urlp) . '/a-a.css" />' . "\n";
 				//With 0.2.6 you can decide show or hide :)
 				if ($opts['showmp3info'] == 'no') {
 								echo '<style>div.mp3info {display:none;}</style>';
@@ -184,7 +182,6 @@ function aa_settings( ) {
 					$yesno_fields = array('show_b_title', 'showmp3info', 'showvideoinfo', 'galeri', 'page_ok', 'category_ok', 'use_colorbox', 'homepage_ok', 'listview', 'newwindow');
 					$int_fields   = array('thw', 'thh', 'tbhw', 'tbhh', 'fhw', 'fhh', 'jhw', 'jhh');
 					$style_fields = array('galstyle' => array('light', 'dark'), 'slimstyle' => array('light', 'dark'));
-					$jwskins      = array('default', 'darkrv5', 'facebook', 'lightrv5', 'modieus', 'nemesis', 'newtube', 'newtubedark');
 
 					foreach ($text_fields as $field) {
 						if (isset($a_new[$field])) {
@@ -204,10 +201,6 @@ function aa_settings( ) {
 							$a_old[$field] = $a_new[$field];
 						}
 					}
-					if (isset($a_new['jwskin']) && in_array($a_new['jwskin'], $jwskins, true)) {
-						$a_old['jwskin'] = $a_new['jwskin'];
-					}
-
 					update_option( 'auto_attachments_options', $a_old);
 					echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Settings saved.', 'autoa') . '</strong></p></div>';
 					}
@@ -304,26 +297,15 @@ function get_attachment_icons( ) {
 								'exclude' => $ex_muz
 				));
 				if (!empty($mp3s)):
-								$skin = $opts['jwskin'];
 								$jhw  = $opts['jhw'];
-								$aa_string .= "<div class='dIW'><div class='mp3info'>" . $opts['mp3_listen'] . "</div><ul>";
+								$aa_string .= "<div class='dIW'><div class='mp3info'>" . esc_html($opts['mp3_listen']) . "</div><ul>";
 								foreach ($mp3s as $mp3):
 												$aa_string .= "<li>";
-												if (!empty($mp3->post_title)): //checking to make sure the post title isn't empty
-												endif;
-												if (!empty($mp3->post_content)): //checking to make sure something exists in post_content (description)
-												endif;
-												$aa_string .= "<div id='mediaspace" . $mp3->ID . "'></div>";
-												$aa_string .= "<script type='text/javascript'>";
-												$aa_string .= "var so = new SWFObject('$urlp/jw/player.swf','ply','$jhw','24','9','#000000');";
-												$aa_string .= "so.addParam('allowfullscreen','false');";
-												$aa_string .= "so.addParam('allowscriptaccess','always');";
-												$aa_string .= "so.addParam('wmode','opaque');";
-												$aa_string .= "so.addVariable('file','" . $mp3->guid . "');";
-												$aa_string .= "so.addVariable('skin','" . $urlp . "/jw/skins/" . $skin . ".zip');";
-												$aa_string .= "so.write('mediaspace" . $mp3->ID . "');";
-												$aa_string .= "</script>";
-												$aa_string .= "<span class='mp3title'>" . $mp3->post_title . " - " . $mp3->post_content . "</span>";
+												$aa_string .= wp_audio_shortcode(array(
+																'src'   => wp_get_attachment_url($mp3->ID),
+																'width' => $jhw,
+												));
+												$aa_string .= "<span class='mp3title'>" . esc_html($mp3->post_title . " - " . $mp3->post_content) . "</span>";
 												$aa_string .= "</li>";
 								endforeach;
 								$aa_string .= "</ul></div>";
@@ -340,24 +322,15 @@ function get_attachment_icons( ) {
 				if (!empty($videoss)):
 								$jhw  = $opts['jhw'];
 								$jhh  = $opts['jhh'];
-								$aa_string .= "<div class='dIW'><div class='videoinfo'>" . $opts['video_watch'] . "</div><ul>";
+								$aa_string .= "<div class='dIW'><div class='videoinfo'>" . esc_html($opts['video_watch']) . "</div><ul>";
 								foreach ($videoss as $videos):
 												$aa_string .= "<li>";
-												if (!empty($videos->post_title)): //checking to make sure the post title isn't empty
-												endif;
-												if (!empty($videos->post_content)): //checking to make sure something exists in post_content (description)
-												endif;
-												$aa_string .= "<div id='mediaspace" . $videos->ID . "'></div>";
-												$aa_string .= "<script type='text/javascript'>";
-												$aa_string .= "var so = new SWFObject('$urlp/jw/player.swf','ply','$jhw','$jhh','9','#000000');";
-												$aa_string .= "so.addParam('allowfullscreen','true');";
-												$aa_string .= "so.addParam('allowscriptaccess','always');";
-												$aa_string .= "so.addParam('wmode','opaque');";
-												$aa_string .= "so.addVariable('file','" . $videos->guid . "');";
-												$aa_string .= "so.addVariable('skin','" . $urlp . "/jw/skins/" . $skin . ".zip');";
-												$aa_string .= "so.write('mediaspace" . $videos->ID . "');";
-												$aa_string .= "</script>";
-												$aa_string .= "<span class='mp3title'>" . $videos->post_title . " - " . $videos->post_content . "</span>";
+												$aa_string .= wp_video_shortcode(array(
+																'src'    => wp_get_attachment_url($videos->ID),
+																'width'  => $jhw,
+																'height' => $jhh,
+												));
+												$aa_string .= "<span class='mp3title'>" . esc_html($videos->post_title . " - " . $videos->post_content) . "</span>";
 												$aa_string .= "</li>";
 								endforeach;
 								$aa_string .= "</ul></div>";

@@ -365,8 +365,6 @@ function getmusic_aa($atts) {
 	extract(shortcode_atts(array("id" => ''), $atts));
 	$dis = explode(',',$id);
 	$ex_muz = get_post_meta($post->ID,'ex_muz',true);
-	$urlp = plugins_url('/auto-attachments/includes');
-	$skin = $opts['jwskin'];
 	$jhw  = $opts['jhw'];
 	$musicaa = "";
 	if ($ex_muz != "") {
@@ -374,17 +372,11 @@ function getmusic_aa($atts) {
 	foreach ($dis as $di){
 		$posti = get_post($di);
 		$musicaa .= "<li>";
-		$musicaa .= "<div id='mediaspace" . $posti->ID . "'></div>";
-		$musicaa .= "<script type='text/javascript'>
-		var so = new SWFObject('$urlp/jw/player.swf','ply','$jhw','24','9','#000000');
-		so.addParam('allowfullscreen','false');
-		so.addParam('allowscriptaccess','always');
-		so.addParam('wmode','opaque');
-		so.addVariable('file','" . $posti->guid . "');
-		so.addVariable('skin','" . $urlp . "/jw/skins/" . $skin . ".zip');
-		so.write('mediaspace" . $posti->ID . "');
-		</script>";
-	$musicaa .= "</li>";
+		$musicaa .= wp_audio_shortcode(array(
+			'src'   => wp_get_attachment_url($posti->ID),
+			'width' => $jhw,
+		));
+		$musicaa .= "</li>";
 	}
 	$musicaa .="</ul></div><div style='clear:both;'> </div>";
 	}
@@ -399,8 +391,6 @@ function getvideo_aa($atts) {
 	extract(shortcode_atts(array("id" => ''), $atts));
 	$dis = explode(',',$id);
 	$ex_vid = get_post_meta($post->ID,'ex_vid',true);
-	$urlp = plugins_url('/auto-attachments/includes');
-	$skin = $opts['jwskin'];
 	$jhw  = $opts['jhw'];
 	$jhh  = $opts['jhh'];
 	$videoaa = "";
@@ -409,16 +399,11 @@ function getvideo_aa($atts) {
 	foreach ($dis as $di){
 		$posti = get_post($di);
 		$videoaa .= "<li>";
-		$videoaa .= "<div id='mediaspace" . $posti->ID . "'></div>";
-		$videoaa .= "<script type='text/javascript'>
-		var so = new SWFObject('$urlp/jw/player.swf','ply','$jhw','$jhh','9','#000000');
-		so.addParam('allowfullscreen','true');
-		so.addParam('allowscriptaccess','always');
-		so.addParam('wmode','opaque');
-		so.addVariable('file','" . $posti->guid . "');
-		so.addVariable('skin','" . $urlp . "/jw/skins/" . $skin . ".zip');
-		so.write('mediaspace" . $posti->ID . "');
-		</script>";
+		$videoaa .= wp_video_shortcode(array(
+			'src'    => wp_get_attachment_url($posti->ID),
+			'width'  => $jhw,
+			'height' => $jhh,
+		));
 		$videoaa .= "</li>";
 	}
 	$videoaa .="</ul></div><div style='clear:both;'> </div>";
