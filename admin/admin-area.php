@@ -155,32 +155,7 @@ $opts = get_option('auto_attachments_options');
 						</p>
 						<p><strong><?php _e('File Icon Size?', 'autoa'); ?></strong></p>
 						<input type="text" name="autoa[fhw]" size="3" value="<?php echo esc_attr($opts['fhw']); ?>" />px <strong>(<?php _e('Width', 'autoa'); ?>)</strong>&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="autoa[fhh]" size="3" value="<?php echo esc_attr($opts['fhh']); ?>" />px <strong>(<?php _e('Height', 'autoa'); ?>)</strong>
-						<p><strong><?php _e('Jw Player Skin', 'autoa'); ?></strong></p>
-							<div id="jwpre" style="float:right;"><img src="<?php echo esc_url($urlp); ?>/includes/jw/skins/pic/<?php echo esc_attr($opts['jwskin']); ?>.png" /></div>
-								<span style="font-size: 10px;"><em><?php _e('You can select JW Player Skin.', 'autoa'); ?></em></span>
-								<?php
-									$skins = array(
-													"default",
-													"darkrv5",
-													"facebook",
-													"lightrv5",
-													"modieus",
-													"nemesis",
-													"newtube",
-													"newtubedark"
-													);
-										$optme = $opts['jwskin'];
-								?>
-								<label class="sell">
-									<select name="autoa[jwskin]" id="jwskin" class="sel">
-										<?php
-											foreach ($skins as $sk) {
-										?>
-											<option name="jwskin" value="<?php echo esc_attr($sk); ?>" <?php selected($optme, $sk); ?> /><?php echo esc_html($sk); ?></option>
-										<?php } ?>
-									</select>
-								</label>
-						<p><strong><?php _e('Jw Player Dimensions?', 'autoa'); ?></strong><br />
+						<p><strong><?php _e('Player Dimensions?', 'autoa'); ?></strong><br />
 							<small><i><?php _e('This dimensions actually for video player. Mp3 player will use only width.','autoa'); ?></i></small></p>
 								<input type="text" name="autoa[jhw]" size="3" value="<?php echo esc_attr($opts['jhw']); ?>" />px <strong>(<?php _e('Width', 'autoa'); ?>)</strong>&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="autoa[jhh]" size="3" value="<?php echo esc_attr($opts['jhh']); ?>" />px <strong>(<?php _e('Height', 'autoa'); ?>)</strong>
 					</div>

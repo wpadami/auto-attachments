@@ -67,6 +67,12 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.8.0 =
+* Replaced the Flash-based JW Player (dead in every browser since 2020) with WordPress core's HTML5 audio/video players (`wp_audio_shortcode()`/`wp_video_shortcode()`), in both the automatic attachment listing and the `[musicaa]`/`[videoaa]` shortcodes.
+* Removed the swfobject.js include from every page's `<head>`.
+* Removed the now-defunct "JW Player Skin" setting; the width/height fields are kept as general player dimensions.
+* Removed the unused `includes/jw/` Flash assets (player.swf, skin archives, swfobject.js).
+
 = Version 0.7.1 =
 * Security: settings save now verifies the nonce that was already being rendered, and requires `manage_options`.
 * Security: admin menu registration switched from a legacy numeric role level to the `manage_options` capability.
