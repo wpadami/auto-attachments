@@ -67,6 +67,15 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.11.0 =
+* Rebuilt the admin settings page on WordPress's native React stack (`wp-element`/`wp-components`/`wp-api-fetch`, all bundled with WP core) instead of the old jQuery UI accordion form.
+* Settings now read/write through a REST API (`auto-attachments/v1/settings`, `manage_options`-gated, validated `args` schema) instead of a raw `$_POST` form submit.
+* Added `AutoAttachments\Settings` as the single source of truth for the option schema, defaults, and sanitization - previously split between `_aa_install()`'s defaults array and the settings-save function's sanitization groups.
+* Added a `@wordpress/scripts` build (`package.json`, `src/admin/`); the compiled output is committed to `build/admin/` since there's no CI build step yet.
+* Removed `admin/admin-area.php` and the jQuery-UI-accordion-only assets (`includes/js/ui.ms.js`, `includes/js/aa.js`, `includes/js/css/custom/`).
+* The decorative "Contributor" sidebar (gravatar/links) on the old settings page was dropped, not recreated.
+* Setting storage format is unchanged (`'yes'`/`'no'` strings in the `auto_attachments_options` option), so nothing else in the plugin needed to change.
+
 = Version 0.10.0 =
 * Removed the "Regen. Thumbnails" admin page and its AJAX handler (`admin/rebuild.php`) - this feature was carried over from another author's plugin and wasn't original to Auto Attachments. The plugin's own thumbnail sizes (`aa_thumb`/`aa_big`) are unaffected; only the manual regeneration tool is gone.
 * Updated FAQ/notice text that referenced the removed "Rebuild Thumbnail page".

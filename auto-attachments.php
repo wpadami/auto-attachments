@@ -3,7 +3,7 @@
 Plugin Name: Auto Attachments
 Plugin URI: https://github.com/wpadami/auto-attachments
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4 
-Version: 0.10.0
+Version: 0.11.0
 Author: Serkan Algur
 Author URI: https://github.com/serkanalgur
 License: GPLv2 or later
@@ -61,40 +61,16 @@ function aa_install( ) {
 				_aa_install();
 }
 function _aa_install() {
-			$aaopt = array (
-				'mp3_listen' 	=> 'Files to Listen',
-				'video_watch' 	=> 'Files to Watch',
-				'before_title'	=> 'Here is the attachments of this Post',
-				'show_b_title' 	=> 'yes',
-				'showmp3info'	=> 'yes',
-				'showvideoinfo'	=> 'yes',
-				'galeri' 		=> 'yes',
-				'thw'			=> '100',
-				'thh'			=> '100',
-				'tbhw' 			=> '800',
-				'tbhh'			=> '600',
-				'fhw' 			=> '48',
-				'fhh' 			=> '48',
-				'jhw' 			=> '470',
-				'jhh' 			=> '325',
-				'page_ok' 		=> 'no',
-				'category_ok'	=> 'no',
-				'use_colorbox' 	=> 'no',
-				'homepage_ok' 	=> 'no',
-				'listview' 		=> 'no',
-				'newwindow' 	=> 'no',
-				'slimstyle' 	=> 'light',
-				'galstyle' 		=> 'light'
-				);
-				
-				// if old options exist, update to new system
-				foreach( $aaopt as $key => $value ) {
-					if( $existing = get_option($key) ) {
-					$aaopt[$key] = $existing;
-					delete_option($key);
-					}
+			$aaopt = \AutoAttachments\Settings::defaults();
+
+			// if old (pre-0.5, individually-stored) options exist, migrate them
+			foreach( $aaopt as $key => $value ) {
+				if( $existing = get_option($key) ) {
+				$aaopt[$key] = $existing;
+				delete_option($key);
 				}
-			add_option('auto_attachments_options', $aaopt);
+			}
+		add_option('auto_attachments_options', $aaopt);
 }
 //DeACTIVATE (MULTISITES)
 register_deactivation_hook(__FILE__, 'aa_uninstall');
@@ -119,20 +95,6 @@ function aa_uninstall( ) {
 function _aa_uninstall( ) {	
 				delete_option('auto_attachments_options');
 }
-//Admin Area Accordion 
-function admin_aa_scripts( ) {
-				$urlp = plugins_url('/auto-attachments/includes');
-				wp_register_script('auto-attachments1', '' . $urlp . '/js/ui.ms.js', __FILE__);
-				wp_register_script('auto-attachments2', '' . $urlp . '/js/aa.js', __FILE__);
-
-				wp_enqueue_script('auto-attachments1');
-				wp_enqueue_script('auto-attachments2');
-}
-function admin_aa_styles( ) {
-				$urlp = plugins_url('/auto-attachments/includes');
-				wp_enqueue_style('customcss', '' . $urlp . '/js/css/custom/ui.css');
-}
-//Admin Area Accordion
 //Add Css into Header (Header Text Options (added with v0.2.6))
 add_action('wp_head', 'addHeaderCode');
 function addHeaderCode( ) {
@@ -146,60 +108,6 @@ function addHeaderCode( ) {
 				if ($opts['showvideoinfo'] == 'no') {
 								echo '<style>div.videoinfo {display:none;}</style>';
 				}
-}
-$opts = get_option('auto_attachments_options');
-//Admin Area
-//Custom Admin Area Settinngs
-add_action('admin_menu', 'aa_admin_page');
-function aa_admin_page( ) {
-				$page = add_menu_page(__('Auto Attachments', 'autoa'), __('Auto Attachments', 'autoa'), 'manage_options', 'auto_attachments', 'aa_settings', plugins_url('auto-attachments/includes/images/aamenu.png'));
-				add_action('admin_print_scripts-'.$page , 'admin_aa_scripts');
-				add_action('admin_print_styles', 'admin_aa_styles');
-}
-
-
-function aa_settings( ) {
-				global $wpdb;
-				//Update Option (Changed with 0.5 [Multisite Supp.])
-				if (isset($_POST['serkoup']) && $_POST['serkoup'] == 'uppo') {
-					check_admin_referer('update-options');
-					if (!current_user_can('manage_options')) {
-						wp_die(esc_html__('You do not have permission to change these settings.', 'autoa'));
-					}
-					//Form data sent
-					$a_new = isset($_POST['autoa']) ? wp_unslash($_POST['autoa']) : array();
-					$a_old = get_option('auto_attachments_options');
-
-					$text_fields  = array('mp3_listen', 'video_watch', 'before_title');
-					$yesno_fields = array('show_b_title', 'showmp3info', 'showvideoinfo', 'galeri', 'page_ok', 'category_ok', 'use_colorbox', 'homepage_ok', 'listview', 'newwindow');
-					$int_fields   = array('thw', 'thh', 'tbhw', 'tbhh', 'fhw', 'fhh', 'jhw', 'jhh');
-					$style_fields = array('galstyle' => array('light', 'dark'), 'slimstyle' => array('light', 'dark'));
-
-					foreach ($text_fields as $field) {
-						if (isset($a_new[$field])) {
-							$a_old[$field] = sanitize_text_field($a_new[$field]);
-						}
-					}
-					foreach ($yesno_fields as $field) {
-						$a_old[$field] = (isset($a_new[$field]) && $a_new[$field] == 'yes') ? 'yes' : 'no';
-					}
-					foreach ($int_fields as $field) {
-						if (isset($a_new[$field])) {
-							$a_old[$field] = absint($a_new[$field]);
-						}
-					}
-					foreach ($style_fields as $field => $choices) {
-						if (isset($a_new[$field]) && in_array($a_new[$field], $choices, true)) {
-							$a_old[$field] = $a_new[$field];
-						}
-					}
-					update_option( 'auto_attachments_options', $a_old);
-					echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Settings saved.', 'autoa') . '</strong></p></div>';
-					}
-				//Start to write admin area
-				include 'admin/admin-area.php'; //I included because HTML Codes too Mainstream :)
-				//Admin area finish
-
 }
 $opts = get_option('auto_attachments_options');
 add_image_size('aa_big', $opts['tbhw'], $opts['tbhh']);
