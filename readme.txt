@@ -67,6 +67,9 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.8.1 =
+* Added `composer.json` (PSR-4 autoload map, PHPCS dev dependency) and a lightweight runtime autoloader for the new `AutoAttachments\` namespace, plus a `src/Plugin.php` bootstrap class. No behavior change - this is scaffolding for moving new/touched code to an OOP structure going forward.
+
 = Version 0.8.0 =
 * Replaced the Flash-based JW Player (dead in every browser since 2020) with WordPress core's HTML5 audio/video players (`wp_audio_shortcode()`/`wp_video_shortcode()`), in both the automatic attachment listing and the `[musicaa]`/`[videoaa]` shortcodes.
 * Removed the swfobject.js include from every page's `<head>`.
