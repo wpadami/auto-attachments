@@ -14,7 +14,7 @@ This plugin makes your attachments more effective.
 
 Auto Attachments make your attachmens more effective. When you upload an attachment to your article, this plugin detect attachment's type and create a file list and a download area after <code>the_content</code>. And if you add some audio and video files the plugin add a jw player for this file. Plugin works with mp3, ogg, FLV, MP4 and other video & audio types (What supports by JW Player and WordPress)
 
-**NOTICE**: Please Set your thumbnail and big image sizes and rebuild your images once. Read [FAQ](faq/) please
+**NOTICE**: Please set your thumbnail and big image sizes before uploading new images - changing these sizes doesn't retroactively resize already-uploaded attachments. Read [FAQ](faq/) please
 
 With new admin area (0.5.3 - [look screenshots](#screenshots) options were groupped with clean, jQuery UI based design. You can control all of plugin's options. You can select JW Player's theme, you can decide downloadble files design, list or grid. Also you can add header titles for video and audio files. You can find a .pot file in languages folder.
 
@@ -46,7 +46,7 @@ Plugin is multilingual. If you translate please open an issue on [GitHub](https:
 Use WordPress media uploader when you create new page or post **(Insert / Upload button)** and upload your files. No special things required. Plugin uses wordpress attachments.
 
 **My Thumbnail is too big. How can i change size?**<br /> 
-Go to Auto Attachments => Gallery Settings from accordion and set Thumnbail & Big size dimensions what px you want. And please use Rebuild Thumbnail page.
+Go to Auto Attachments => Gallery Settings from accordion and set Thumbnail & Big size dimensions what px you want. This only applies to images uploaded after the change; already-uploaded attachments keep their existing thumbnail sizes.
 
 **How i change file list type to multi-column (or reverse)**<br /> 
 Go to Auto Attachments => Misc. Settings and if you want to use multi-column list set yes "List view of Files" (default No).
