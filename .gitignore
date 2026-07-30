@@ -177,3 +177,8 @@ npm-debug.log*
 # output - un-ignore it explicitly.
 !/build/
 !/build/**
+# wp-scripts auto-copies every src/**/block.json it finds into each
+# entry's own output-path, regardless of which entry triggered the build -
+# these duplicate copies aren't the one PHP actually loads (build/block/block.json).
+/build/admin/block/
+/build/block/block/

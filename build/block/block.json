@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "auto-attachments/attachment-list",
+    "title": "Attachment List (Auto Attachments)",
+    "category": "media",
+    "icon": "paperclip",
+    "description": "Insert this post's file, image, audio, or video attachments.",
+    "textdomain": "auto-attachments",
+    "attributes": {
+        "type": {
+            "type": "string",
+            "enum": [ "file", "image", "audio", "video" ],
+            "default": "file"
+        },
+        "ids": {
+            "type": "array",
+            "items": { "type": "number" },
+            "default": []
+        }
+    },
+    "supports": {
+        "html": false
+    },
+    "editorScript": "file:./index.js"
+}

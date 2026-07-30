@@ -313,9 +313,8 @@ function getimages_aa($atts) {
 	$opts = get_option('auto_attachments_options');
 	extract(shortcode_atts(array("id" => ''), $atts));
 	$dis = explode(',',$id);
-	$ex_rsm = get_post_meta($post->ID,'ex_rsm',true);
 	$imageaa = "";
-	if ($ex_rsm != "") {
+	if ($id != "") {
 	$attachments = array_map('get_post', $dis);
 	$imageaa = \AutoAttachments\Plugin::instance()->gallery_renderer()->render(
 		$attachments,
@@ -334,10 +333,9 @@ function getfiles_aa($atts) {
 	$opts = get_option('auto_attachments_options');
 	extract(shortcode_atts(array("id" => ''), $atts));
 	$dis = explode(',',$id);
-	$ex_dosya = get_post_meta($post->ID,'ex_dosya',true);
 	$urlp = plugins_url('/auto-attachments/includes');
 	$filesaa = "";
-	if ($ex_dosya != "") {
+	if ($id != "") {
 	$filesaa .= "<div class='dIW2'>";
 	foreach ($dis as $di){
 		$posti = get_post($di);
@@ -348,7 +346,7 @@ function getfiles_aa($atts) {
 		$_name_array = explode("/", $_link);
 		$_post_mime  = str_replace("/", "-", $posti->post_mime_type);
 		$_name       = array_reverse($_name_array);
-		$filesaa .= "<div class='dI' id='$posti->ID'><a href='$_link' $target><img src='$urlp/images/mime/" . $_post_mime . ".png' width='$fhw' height='$fhh'/></a><a class='dItitle' href='$file_link'>" . $posti->post_title . "</a></div>";
+		$filesaa .= "<div class='dI' id='$posti->ID'><a href='$_link' $target><img src='$urlp/images/mime/" . $_post_mime . ".png' width='$fhw' height='$fhh'/></a><a class='dItitle' href='$_link'>" . $posti->post_title . "</a></div>";
 	}
 	$filesaa .="</div><div style='clear:both;'> </div>";
 	}
@@ -362,10 +360,9 @@ function getmusic_aa($atts) {
 	$opts = get_option('auto_attachments_options');
 	extract(shortcode_atts(array("id" => ''), $atts));
 	$dis = explode(',',$id);
-	$ex_muz = get_post_meta($post->ID,'ex_muz',true);
 	$jhw  = $opts['jhw'];
 	$musicaa = "";
-	if ($ex_muz != "") {
+	if ($id != "") {
 	$musicaa .= "<div class='dIW'><ul>";
 	foreach ($dis as $di){
 		$posti = get_post($di);
@@ -388,11 +385,10 @@ function getvideo_aa($atts) {
 	$opts = get_option('auto_attachments_options');
 	extract(shortcode_atts(array("id" => ''), $atts));
 	$dis = explode(',',$id);
-	$ex_vid = get_post_meta($post->ID,'ex_vid',true);
 	$jhw  = $opts['jhw'];
 	$jhh  = $opts['jhh'];
 	$videoaa = "";
-	if ($ex_vid != "") {
+	if ($id != "") {
 	$videoaa .= "<div class='dIW'><ul>";
 	foreach ($dis as $di){
 		$posti = get_post($di);
