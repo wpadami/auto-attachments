@@ -3,7 +3,7 @@
 Plugin Name: Auto Attachments
 Plugin URI: https://github.com/wpadami/auto-attachments
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4 
-Version: 0.8.1
+Version: 0.9.0
 Author: Serkan Algur
 Author URI: https://github.com/serkanalgur
 License: GPLv2 or later
@@ -150,29 +150,6 @@ function addHeaderCode( ) {
 				}
 }
 $opts = get_option('auto_attachments_options');
-//Colorbox usage (added with 0.2.7)
-if ($opts['use_colorbox'] == 'yes') {
-				add_action('wp_print_scripts', 'enqueue_aa_scripts');
-				add_action('wp_print_styles', 'enqueue_aa_styles');
-				function enqueue_aa_scripts( ) {
-								$urlp = plugins_url('/auto-attachments/includes');
-								wp_enqueue_script('jquery');
-								wp_enqueue_script('tinybox_script', '' . $urlp . '/js/slimbox2.js', array(
-												'jquery'
-								));
-				}
-				function enqueue_aa_styles()
-					{
-							$opts = get_option('auto_attachments_options');
-							$urlp = plugins_url('/auto-attachments/includes');
-							if ($opts['slimstyle'] == 'dark' ){
-							wp_enqueue_style('slimbox_css_dark', '' . $urlp . '/js/slimbox/slimbox-dark.css');
-							} else {
-							wp_enqueue_style('slimbox_css', '' . $urlp . '/js/slimbox/slimbox.css');
-							}
-							
-					}
-}
 //Admin Area
 //Custom Admin Area Settinngs
 add_action('admin_menu', 'aa_admin_page');
@@ -353,36 +330,20 @@ function get_attachment_icons( ) {
 								$aa_string .= "</ul></div>";
 				endif;
 				if ($opts['galeri'] == 'yes') {
-								global $blog_id, $current_site;
 								$thumb_ID = get_post_thumbnail_id( get_the_ID());
 								$ex_rsm = get_post_meta(get_the_ID(), 'ex_rsm', TRUE);
-								if ($galeriresim = get_children(array( //do only if there are attachments of these qualifications
+								$galeriresim = get_children(array( //do only if there are attachments of these qualifications
 												'post_parent' => get_the_ID(),
 												'post_type' => 'attachment',
 												'numberposts' => -1,
 												'post_mime_type' => 'image', //MIME Type condition
 												'exclude' => $thumb_ID.','.$ex_rsm
-								))) {
-												$aa_string .= "<div class='dIW1'><div class='galeri-".$opts['galstyle']."'>";
-												foreach ($galeriresim as $galerir) //setup array for more than one file attachment
-																{
-																$file_link       = wp_get_attachment_url($galerir->ID); //get the url for linkage
-																$file_name_array = explode("/", $galrerir_link);
-																$aath            = wp_get_attachment_image_src($galerir->ID, 'aa_thumb');
-																$aabg            = wp_get_attachment_image_src($galerir->ID, 'aa_big');
-																$aa_string .= "<a href='$aabg[0]' rel='lightbox-grp'>";
-																if (isset($blog_id) && $blog_id > 1) //fix for TimThumb
-																				{
-																				$image_link_parts = explode("/files/", $galerir->guid); //fix for TimThumb
-																				$aa_string .= "<img src='$aath[0]'/>";
-																				$aa_string .= "</a>";
-																} else {
-																				$aa_string .= "<img src='$aath[0]'/>";
-																				$aa_string .= "</a>";
-																}
-												}
-												$aa_string .= "</div></div>";
-								}
+								));
+								$aa_string .= \AutoAttachments\Plugin::instance()->gallery_renderer()->render(
+												$galeriresim,
+												'aa-gallery-' . get_the_ID(),
+												$opts['galstyle']
+								);
 				}
 				$aa_string .= "<div style='clear:both;'></div>";
 				// Last Check for attachments (Needed After "Before Title option") Thanks Kris! :)

@@ -316,14 +316,12 @@ function getimages_aa($atts) {
 	$ex_rsm = get_post_meta($post->ID,'ex_rsm',true);
 	$imageaa = "";
 	if ($ex_rsm != "") {
-	$imageaa .= "<div class='dIW1'><div class='galeri-".$opts['galstyle']."'>";
-	foreach ($dis as $di){
-		$posti = get_post($di);
-		$aath = wp_get_attachment_image_src($posti->ID, 'aa_thumb');
-		$aabg = wp_get_attachment_image_src($posti->ID, 'aa_big');
-		$imageaa .= "<a href='$aabg[0]' rel='lightbox-grp-shcode'><img src='$aath[0]'/></a>";
-	}
-	$imageaa .="</div></div><div style='clear:both;'> </div>";
+	$attachments = array_map('get_post', $dis);
+	$imageaa = \AutoAttachments\Plugin::instance()->gallery_renderer()->render(
+		$attachments,
+		'aa-gallery-shortcode-' . $post->ID,
+		$opts['galstyle']
+	);
 	}
 	return $imageaa;
 }
