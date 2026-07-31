@@ -12,11 +12,26 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Registers the "Attachment List" block editor block - the block-editor
  * equivalent of the legacy [imageaa]/[filesaa]/[musicaa]/[videoaa]
- * shortcodes. Rendering delegates to those same shortcode callback
- * functions (admin/shortcodes.php) rather than a second copy of the
- * markup-building logic.
+ * shortcodes. Rendering delegates to the same ShortcodeController used by
+ * those shortcodes rather than a second copy of the markup-building logic.
  */
 class Block {
+
+	/**
+	 * Shared shortcode rendering logic.
+	 *
+	 * @var ShortcodeController
+	 */
+	private $shortcodes;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ShortcodeController $shortcodes Shared shortcode rendering logic.
+	 */
+	public function __construct( ShortcodeController $shortcodes ) {
+		$this->shortcodes = $shortcodes;
+	}
 
 	/**
 	 * Hook the block registration into WordPress init.
@@ -60,13 +75,13 @@ class Block {
 
 		switch ( $type ) {
 			case 'image':
-				return getimages_aa( $atts );
+				return $this->shortcodes->images( $atts );
 			case 'audio':
-				return getmusic_aa( $atts );
+				return $this->shortcodes->audio( $atts );
 			case 'video':
-				return getvideo_aa( $atts );
+				return $this->shortcodes->video( $atts );
 			default:
-				return getfiles_aa( $atts );
+				return $this->shortcodes->files( $atts );
 		}
 	}
 }

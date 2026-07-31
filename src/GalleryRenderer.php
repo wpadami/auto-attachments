@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * [imageaa] shortcode (getimages_aa()), which previously each built their
  * own copy of this HTML.
  */
-class GalleryRenderer {
+class GalleryRenderer implements Renderer {
 
 	/**
 	 * Lightbox service used for markup/grouping.
@@ -37,12 +37,13 @@ class GalleryRenderer {
 	 * Render a gallery of image attachments.
 	 *
 	 * @param \WP_Post[] $attachments Image attachments to render.
-	 * @param string     $group       Lightbox grouping key (e.g. the post ID);
-	 *                                keep automatic and shortcode galleries in
-	 *                                separate groups so they don't cycle together.
-	 * @param string     $style       'light' or 'dark' gallery style.
+	 * @param array      $options     Must include 'group' (lightbox grouping key,
+	 *                                e.g. the post ID - keep automatic and
+	 *                                shortcode galleries in separate groups so
+	 *                                they don't cycle together) and 'galstyle'
+	 *                                ('light' or 'dark').
 	 */
-	public function render( array $attachments, string $group, string $style ): string {
+	public function render( array $attachments, array $options ): string {
 		$attachments = array_filter(
 			$attachments,
 			function ( $attachment ) {
@@ -54,7 +55,8 @@ class GalleryRenderer {
 			return '';
 		}
 
-		$style = ( 'dark' === $style ) ? 'dark' : 'light';
+		$group = isset( $options['group'] ) ? (string) $options['group'] : '';
+		$style = ( isset( $options['galstyle'] ) && 'dark' === $options['galstyle'] ) ? 'dark' : 'light';
 		$html  = "<div class='dIW1'><div class='galeri-{$style}'>";
 
 		foreach ( $attachments as $attachment ) {
