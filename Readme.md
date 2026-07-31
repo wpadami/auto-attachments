@@ -62,6 +62,11 @@ Go to **Posts (or Pages)** -> **Create New (or Edit)**. You will see a new **but
 
 ## Changelog
 
+### Version 1.1.2
+* Fixed the per-page "Show Auto Attachments?" checkbox: unchecking it (or checking it) could silently have no effect, because its save handler gated on `$_POST['post_type']`, which the block editor's meta-box-compat save request doesn't reliably include - the handler would bail before ever reaching the update/delete logic, freezing whatever the checkbox's state happened to be. Now uses the authoritative `get_post_type()` instead, plus standard autosave/revision save guards.
+* Shortcode-panel selectboxes (Image/Audio/Video/File) now show the attachment ID first in each option's label (e.g. `(42) My Long File Name.pdf`, with the full name+id as a hover tooltip) - long filenames were pushing the id out of view in the narrow selectbox.
+* Added `Requires at least: 5.0` / `Requires PHP: 7.4` to the plugin file header (auto-attachments.php) - previously only in readme.txt, but it's the plugin header WordPress core actually reads to block activation on incompatible sites.
+
 ### Version 1.1.1
 * Fixed the classic-editor shortcode-builder dialog: its button did nothing and threw `$(...).dialog is not a function` in the console, because it relied on the jQuery UI "dialog" widget, which WordPress doesn't enqueue by default. Rebuilt on the native HTML `<dialog>` element with plain JS (no jQuery or jQuery UI at all), matching the rest of this plugin's dependency-free modernization.
 * Trimmed the `Tags:` field in readme.txt from 21 entries (WordPress.org only honors the first 5) down to 5, and dropped the redundant "plugin" tag.

@@ -54,15 +54,27 @@ class PageMetaBox {
 	/**
 	 * Save handler for `save_post`.
 	 *
+	 * Uses get_post_type() rather than trusting $_POST['post_type'] to
+	 * identify pages: the block editor's meta-box-compat save request
+	 * (used for any classic meta box, like this one, on a post type
+	 * that uses the block editor) doesn't reliably include that field,
+	 * which would otherwise cause this handler to bail before ever
+	 * reaching the update/delete logic below - freezing whatever the
+	 * checkbox's state happened to be, regardless of what's submitted.
+	 *
 	 * @param int $post_id Post being saved.
 	 */
 	public function save( int $post_id ): void {
-		$nonce = isset( $_POST[ self::NONCE_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::NONCE_FIELD ] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
+		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
 			return;
 		}
 
-		if ( ! isset( $_POST['post_type'] ) || 'page' !== $_POST['post_type'] ) {
+		if ( 'page' !== get_post_type( $post_id ) ) {
+			return;
+		}
+
+		$nonce = isset( $_POST[ self::NONCE_FIELD ] ) ? sanitize_text_field( wp_unslash( $_POST[ self::NONCE_FIELD ] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
 			return;
 		}
 
