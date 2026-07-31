@@ -68,6 +68,9 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 1.2.0 =
+* New: newly uploaded files/images/audio/video are now auto-attached to the post/page they're embedded in, if WordPress left them "unattached" (post_parent = 0) - a well-known gap in the block editor's Image/File/Audio/Video blocks (and occasionally the classic editor too). On save, the post's content is scanned for `wp-image-{ID}` classes and file/audio/video URLs, and any referenced attachment that's still unattached is claimed for that post. Already-attached media is never moved. This is what the automatic listing and the shortcode panel both use to find "this post's attachments," so it fixes uploads not showing up in either.
+
 = Version 1.1.2 =
 * Fixed the per-page "Show Auto Attachments?" checkbox: unchecking it (or checking it) could silently have no effect, because its save handler gated on `$_POST['post_type']`, which the block editor's meta-box-compat save request doesn't reliably include - the handler would bail before ever reaching the update/delete logic, freezing whatever the checkbox's state happened to be. Now uses the authoritative `get_post_type()` instead, plus standard autosave/revision save guards.
 * Shortcode-panel selectboxes (Image/Audio/Video/File) now show the attachment ID first in each option's label (e.g. `(42) My Long File Name.pdf`, with the full name+id as a hover tooltip) - long filenames were pushing the id out of view in the narrow selectbox.

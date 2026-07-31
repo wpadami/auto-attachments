@@ -9,7 +9,7 @@
 Plugin Name: Auto Attachments
 Plugin URI: https://github.com/wpadami/auto-attachments
 Description: This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4
-Version: 1.1.2
+Version: 1.2.0
 Requires at least: 5.0
 Requires PHP: 7.4
 Author: Serkan Algur
