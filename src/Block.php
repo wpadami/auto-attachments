@@ -1,4 +1,10 @@
 <?php
+/**
+ * Block editor block for inserting attachment lists.
+ *
+ * @package AutoAttachments
+ */
+
 namespace AutoAttachments;
 
 defined( 'ABSPATH' ) || exit;
@@ -12,10 +18,16 @@ defined( 'ABSPATH' ) || exit;
  */
 class Block {
 
+	/**
+	 * Hook the block registration into WordPress init.
+	 */
 	public function register_hooks(): void {
 		add_action( 'init', array( $this, 'register' ) );
 	}
 
+	/**
+	 * Register the block type from its build/block.json metadata.
+	 */
 	public function register(): void {
 		$block_json = __DIR__ . '/../build/block/block.json';
 		if ( ! file_exists( $block_json ) ) {
@@ -29,7 +41,10 @@ class Block {
 	}
 
 	/**
-	 * @param array $attributes
+	 * Server-side render callback for the block.
+	 *
+	 * @param array $attributes Block attributes (type, ids).
+	 * @return string Rendered HTML.
 	 */
 	public function render( $attributes ): string {
 		$type = isset( $attributes['type'] ) ? $attributes['type'] : 'file';

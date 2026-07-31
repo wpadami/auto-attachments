@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="Auto Attachments">
+	<description>WPCS ruleset for the Auto Attachments plugin.</description>
+
+	<!--
+	Scoped to src/ only: that's the OOP code under the architecture mandate
+	in claude.md. The legacy procedural files (auto-attachments.php,
+	admin/*.php) predate that mandate and are refactored into src/ as each
+	is next substantially touched, not retrofitted wholesale - see
+	claude.md's "Architecture" section. Once a legacy file's logic has
+	fully moved into src/, drop it from this exclude list.
+	-->
+	<file>src</file>
+
+	<arg name="basepath" value="." />
+	<arg name="colors" />
+	<arg name="extensions" value="php" />
+	<arg value="sp" />
+
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.Files.FileName" />
+	</rule>
+	<rule ref="WordPress-Docs" />
+
+	<config name="minimum_supported_wp_version" value="5.0" />
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="auto-attachments" />
+				<element value="autoa" />
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="PHPCompatibilityWP" />
+	<config name="testVersion" value="7.4-" />
+</ruleset>
