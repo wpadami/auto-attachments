@@ -62,6 +62,64 @@ Go to **Posts (or Pages)** -> **Create New (or Edit)**. You will see a new **but
 
 ## Changelog
 
+### Version 1.0.0
+First stable release of the modernized plugin: WP 7.0/PHP 8 compatible, Flash-free, security-hardened, React-based settings UI, Gutenberg block, and a full OOP rewrite (see below) - enough cumulative change since the 0.x/2013-era codebase to call this the first 1.0 release rather than another 0.x increment.
+
+* Converted all remaining procedural code (`auto-attachments.php`, `admin/shortcodes.php`, `admin/metaboxes.php`) to the `AutoAttachments\` OOP architecture mandated in claude.md - no more bare functions in the global namespace, no more legacy `admin/` includes.
+* New classes: `AttachmentRepository` (attachment queries), `Renderer` interface with `FileRenderer`/`AudioRenderer`/`VideoRenderer` implementations (converging with the existing `GalleryRenderer`), `AttachmentIconsRenderer` (orchestrates the automatic listing), `ContentFilter` (the `the_content` hooks), `HeaderAssets`, `Installer` (activation/deactivation), `ShortcodeController` (`[imageaa]`/`[filesaa]`/`[musicaa]`/`[videoaa]`), `ShortcodePanel` and `ShortcodePanelAjax` (the classic-editor shortcode-builder dialog), and `PageMetaBox`.
+* The shortcodes and the Gutenberg block (added in v0.12.0) now share the exact same renderer classes as the automatic listing, closing the last piece of the file/audio/video rendering duplication described in claude.md's DRY section.
+* Fixed a real bug found while migrating the shortcode-builder dialog: its jQuery used the `.live()` method, removed in jQuery 1.9 (2013) and absent from the jQuery version WordPress ships today - every button in that dialog has been non-functional for years. Now uses `.on()`.
+* Added nonce verification to the shortcode panel's "list this post's attachments" AJAX endpoint (previously capability-checked only).
+* `GalleryRenderer::render()`'s signature changed from `(array $attachments, string $group, string $style)` to `(array $attachments, array $options)` (with `group`/`galstyle` keys) so it can implement the same `Renderer` interface as the other three renderers - internal API only, no user-facing change.
+
+### Version 0.13.0
+* Added `phpcs.xml.dist` (WordPress-Extra + WordPress-Docs + PHPCompatibilityWP, PHP 7.4+), scoped to `src/` - the OOP code under the architecture mandate in claude.md. Legacy procedural files (`auto-attachments.php`, `admin/*.php`) are excluded for now rather than retrofitted wholesale, matching the existing non-retroactive OOP policy.
+* Added missing docblocks across all `src/` classes so `composer lint` passes clean.
+* Added `.github/workflows/ci.yml`: runs `composer install` + `composer lint` + a full `php -l` syntax check on PHP 7.4 and 8.3 for every push/PR. JS lint isn't wired in yet - the current `wp-scripts lint-js` setup has an unrelated `@typescript-eslint`/ESLint version conflict in `node_modules` to sort out first.
+
+### Version 0.12.1
+* Updated stale documentation: the Description and admin-area text still described the removed Flash/JW Player and the old jQuery UI admin screen. Now describes the HTML5 audio/video player and the React settings UI. Also updated `Requires at least`/`Tested up to`/`Requires PHP` header fields. No code changes.
+
+### Version 0.12.0
+* Added a block editor block ("Attachment List (Auto Attachments)") for inserting file, image, audio, or video attachment lists - the block-editor equivalent of the `[imageaa]`/`[filesaa]`/`[musicaa]`/`[videoaa]` shortcodes, which keep working unchanged alongside it.
+* The block is dynamic (server-rendered) and reuses the exact same rendering functions as the shortcodes, so there's one implementation, not a second copy.
+* Fixed a bug in `getimages_aa()`/`getfiles_aa()`/`getmusic_aa()`/`getvideo_aa()`: they gated rendering on an internal "exclude from automatic listing" post-meta value instead of the shortcode's own `id` attribute, which only happened to work when the shortcode panel's AJAX call had run first. Also fixed an unrelated undefined-variable bug in `getfiles_aa()`'s file link.
+
+### Version 0.11.0
+* Rebuilt the admin settings page on WordPress's native React stack (`wp-element`/`wp-components`/`wp-api-fetch`, all bundled with WP core) instead of the old jQuery UI accordion form.
+* Settings now read/write through a REST API (`auto-attachments/v1/settings`, `manage_options`-gated, validated `args` schema) instead of a raw `$_POST` form submit.
+* Added `AutoAttachments\Settings` as the single source of truth for the option schema, defaults, and sanitization - previously split between `_aa_install()`'s defaults array and the settings-save function's sanitization groups.
+* Added a `@wordpress/scripts` build (`package.json`, `src/admin/`); the compiled output is committed to `build/admin/` since there's no CI build step yet.
+* Removed `admin/admin-area.php` and the jQuery-UI-accordion-only assets (`includes/js/ui.ms.js`, `includes/js/aa.js`, `includes/js/css/custom/`).
+* The decorative "Contributor" sidebar (gravatar/links) on the old settings page was dropped, not recreated.
+* Setting storage format is unchanged (`'yes'`/`'no'` strings in the `auto_attachments_options` option), so nothing else in the plugin needed to change.
+
+### Version 0.10.0
+* Removed the "Regen. Thumbnails" admin page and its AJAX handler (`admin/rebuild.php`) - this feature was carried over from another author's plugin and wasn't original to Auto Attachments. The plugin's own thumbnail sizes (`aa_thumb`/`aa_big`) are unaffected; only the manual regeneration tool is gone.
+* Updated FAQ/notice text that referenced the removed "Rebuild Thumbnail page".
+
+### Version 0.9.0
+* Replaced the Slimbox2 (jQuery) gallery lightbox with a small first-party, dependency-free vanilla-JS lightbox (`includes/js/aa-lightbox.js`).
+* Extracted `AutoAttachments\Lightbox` and `AutoAttachments\GalleryRenderer` classes, converging the gallery-rendering HTML that used to be duplicated between the automatic attachment listing and the `[imageaa]` shortcode.
+* Removed the unused `includes/js/colorbox/` assets (already dead since Slimbox2 replaced Colorbox in v0.6) and the old `includes/js/slimbox/` assets.
+* Renamed the "Use Slimbox?" / "Select Slimbox Color Style" admin labels to "Use Lightbox?" / "Select Lightbox Color Style" to match; the underlying settings (`use_colorbox`, `slimstyle`) are unchanged.
+
+### Version 0.8.1
+* Added `composer.json` (PSR-4 autoload map, PHPCS dev dependency) and a lightweight runtime autoloader for the new `AutoAttachments\` namespace, plus a `src/Plugin.php` bootstrap class. No behavior change - this is scaffolding for moving new/touched code to an OOP structure going forward.
+
+### Version 0.8.0
+* Replaced the Flash-based JW Player (dead in every browser since 2020) with WordPress core's HTML5 audio/video players (`wp_audio_shortcode()`/`wp_video_shortcode()`), in both the automatic attachment listing and the `[musicaa]`/`[videoaa]` shortcodes.
+* Removed the swfobject.js include from every page's `<head>`.
+* Removed the now-defunct "JW Player Skin" setting; the width/height fields are kept as general player dimensions.
+* Removed the unused `includes/jw/` Flash assets (player.swf, skin archives, swfobject.js).
+
+### Version 0.7.1
+* Security: settings save now verifies the nonce that was already being rendered, and requires `manage_options`.
+* Security: admin menu registration switched from a legacy numeric role level to the `manage_options` capability.
+* Security: all admin settings output escaped; `checked()`/`selected()` used instead of translating raw HTML strings.
+* Security: AJAX handlers (thumbnail rebuild, shortcode-panel attachment picker) now check nonces and capabilities before acting.
+* Fix: removed `create_function()` (removed in PHP 8.0) and the PHP4-style class constructor in the thumbnail rebuilder, both of which broke that feature under PHP 8.
+
 ### Version 0.7 
 * Tested with WordPress 3.5.1. Working!
 * Admin area jQuery UI upgraded

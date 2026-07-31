@@ -68,7 +68,9 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
-= Version 0.14.0 =
+= Version 1.0.0 =
+First stable release of the modernized plugin: WP 7.0/PHP 8 compatible, Flash-free, security-hardened, React-based settings UI, Gutenberg block, and a full OOP rewrite (see below) - enough cumulative change since the 0.x/2013-era codebase to call this the first 1.0 release rather than another 0.x increment.
+
 * Converted all remaining procedural code (`auto-attachments.php`, `admin/shortcodes.php`, `admin/metaboxes.php`) to the `AutoAttachments\` OOP architecture mandated in claude.md - no more bare functions in the global namespace, no more legacy `admin/` includes.
 * New classes: `AttachmentRepository` (attachment queries), `Renderer` interface with `FileRenderer`/`AudioRenderer`/`VideoRenderer` implementations (converging with the existing `GalleryRenderer`), `AttachmentIconsRenderer` (orchestrates the automatic listing), `ContentFilter` (the `the_content` hooks), `HeaderAssets`, `Installer` (activation/deactivation), `ShortcodeController` (`[imageaa]`/`[filesaa]`/`[musicaa]`/`[videoaa]`), `ShortcodePanel` and `ShortcodePanelAjax` (the classic-editor shortcode-builder dialog), and `PageMetaBox`.
 * The shortcodes and the Gutenberg block (added in v0.12.0) now share the exact same renderer classes as the automatic listing, closing the last piece of the file/audio/video rendering duplication described in claude.md's DRY section.
