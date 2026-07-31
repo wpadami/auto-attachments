@@ -3,7 +3,7 @@
     "description": "This plugin makes your attachments more effective. Supported attachment types are Word, Excel, Pdf, PowerPoint, zip, rar, tar, tar.gz, mp3, flv, mp4.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
-    "version": "0.12.0",
+    "version": "0.12.1",
     "authors": [
         {
             "name": "Serkan Algur",
