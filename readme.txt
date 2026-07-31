@@ -68,6 +68,16 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 1.0.0 =
+First stable release of the modernized plugin: WP 7.0/PHP 8 compatible, Flash-free, security-hardened, React-based settings UI, Gutenberg block, and a full OOP rewrite (see below) - enough cumulative change since the 0.x/2013-era codebase to call this the first 1.0 release rather than another 0.x increment.
+
+* Converted all remaining procedural code (`auto-attachments.php`, `admin/shortcodes.php`, `admin/metaboxes.php`) to the `AutoAttachments\` OOP architecture mandated in claude.md - no more bare functions in the global namespace, no more legacy `admin/` includes.
+* New classes: `AttachmentRepository` (attachment queries), `Renderer` interface with `FileRenderer`/`AudioRenderer`/`VideoRenderer` implementations (converging with the existing `GalleryRenderer`), `AttachmentIconsRenderer` (orchestrates the automatic listing), `ContentFilter` (the `the_content` hooks), `HeaderAssets`, `Installer` (activation/deactivation), `ShortcodeController` (`[imageaa]`/`[filesaa]`/`[musicaa]`/`[videoaa]`), `ShortcodePanel` and `ShortcodePanelAjax` (the classic-editor shortcode-builder dialog), and `PageMetaBox`.
+* The shortcodes and the Gutenberg block (added in v0.12.0) now share the exact same renderer classes as the automatic listing, closing the last piece of the file/audio/video rendering duplication described in claude.md's DRY section.
+* Fixed a real bug found while migrating the shortcode-builder dialog: its jQuery used the `.live()` method, removed in jQuery 1.9 (2013) and absent from the jQuery version WordPress ships today - every button in that dialog has been non-functional for years. Now uses `.on()`.
+* Added nonce verification to the shortcode panel's "list this post's attachments" AJAX endpoint (previously capability-checked only).
+* `GalleryRenderer::render()`'s signature changed from `(array $attachments, string $group, string $style)` to `(array $attachments, array $options)` (with `group`/`galstyle` keys) so it can implement the same `Renderer` interface as the other three renderers - internal API only, no user-facing change.
+
 = Version 0.13.0 =
 * Added `phpcs.xml.dist` (WordPress-Extra + WordPress-Docs + PHPCompatibilityWP, PHP 7.4+), scoped to `src/` - the OOP code under the architecture mandate in claude.md. Legacy procedural files (`auto-attachments.php`, `admin/*.php`) are excluded for now rather than retrofitted wholesale, matching the existing non-retroactive OOP policy.
 * Added missing docblocks across all `src/` classes so `composer lint` passes clean.

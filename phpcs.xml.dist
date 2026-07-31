@@ -3,14 +3,15 @@
 	<description>WPCS ruleset for the Auto Attachments plugin.</description>
 
 	<!--
-	Scoped to src/ only: that's the OOP code under the architecture mandate
-	in claude.md. The legacy procedural files (auto-attachments.php,
-	admin/*.php) predate that mandate and are refactored into src/ as each
-	is next substantially touched, not retrofitted wholesale - see
-	claude.md's "Architecture" section. Once a legacy file's logic has
-	fully moved into src/, drop it from this exclude list.
+	Scoped to src/ (the OOP code under the architecture mandate in
+	claude.md) plus auto-attachments.php, now that it's just a thin
+	autoload/bootstrap file - all of its former logic moved into src/ in
+	v0.14.0. There's no more legacy procedural code left to expand this
+	into; admin/metaboxes.php and admin/shortcodes.php were removed the
+	same release.
 	-->
 	<file>src</file>
+	<file>auto-attachments.php</file>
 
 	<arg name="basepath" value="." />
 	<arg name="colors" />
