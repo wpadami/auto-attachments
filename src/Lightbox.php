@@ -1,4 +1,10 @@
 <?php
+/**
+ * First-party lightbox enqueue and markup helper.
+ *
+ * @package AutoAttachments
+ */
+
 namespace AutoAttachments;
 
 defined( 'ABSPATH' ) || exit;
@@ -16,13 +22,25 @@ class Lightbox {
 
 	const HANDLE = 'auto-attachments-lightbox';
 
-	/** @var array */
+	/**
+	 * Plugin options (`Settings::values()`).
+	 *
+	 * @var array
+	 */
 	private $options;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param array $options Plugin options (`Settings::values()`).
+	 */
 	public function __construct( array $options ) {
 		$this->options = $options;
 	}
 
+	/**
+	 * Hook script/style enqueueing, if the lightbox is enabled.
+	 */
 	public function register_hooks(): void {
 		if ( ! $this->is_enabled() ) {
 			return;
@@ -30,10 +48,16 @@ class Lightbox {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
+	/**
+	 * Whether the `use_colorbox` option has the lightbox turned on.
+	 */
 	public function is_enabled(): bool {
 		return isset( $this->options['use_colorbox'] ) && 'yes' === $this->options['use_colorbox'];
 	}
 
+	/**
+	 * Enqueue the lightbox CSS/JS and its inline theme.
+	 */
 	public function enqueue(): void {
 		$base_url = plugins_url( '/auto-attachments/includes' );
 
@@ -58,6 +82,8 @@ class Lightbox {
 	/**
 	 * HTML attribute that groups a set of anchors into one lightbox
 	 * (prev/next only cycles within the same group).
+	 *
+	 * @param string $group Grouping key, e.g. the post ID.
 	 */
 	public function group_attr( string $group ): string {
 		return sprintf( "data-aa-lightbox='%s'", esc_attr( $group ) );

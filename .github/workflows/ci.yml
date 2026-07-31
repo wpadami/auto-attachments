@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  php:
+    name: PHP lint (PHPCS + syntax)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '7.4', '8.3' ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: PHPCS (WordPress-Extra + WordPress-Docs, src/)
+        run: composer lint
+
+      - name: PHP syntax check (all tracked PHP files)
+        run: |
+          git ls-files '*.php' | xargs -n1 -P4 php -l

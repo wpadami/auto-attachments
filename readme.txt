@@ -68,6 +68,11 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 
 == Changelog ==
 
+= Version 0.13.0 =
+* Added `phpcs.xml.dist` (WordPress-Extra + WordPress-Docs + PHPCompatibilityWP, PHP 7.4+), scoped to `src/` - the OOP code under the architecture mandate in claude.md. Legacy procedural files (`auto-attachments.php`, `admin/*.php`) are excluded for now rather than retrofitted wholesale, matching the existing non-retroactive OOP policy.
+* Added missing docblocks across all `src/` classes so `composer lint` passes clean.
+* Added `.github/workflows/ci.yml`: runs `composer install` + `composer lint` + a full `php -l` syntax check on PHP 7.4 and 8.3 for every push/PR. JS lint isn't wired in yet - the current `wp-scripts lint-js` setup has an unrelated `@typescript-eslint`/ESLint version conflict in `node_modules` to sort out first.
+
 = Version 0.12.1 =
 * Updated stale documentation: the Description and admin-area text still described the removed Flash/JW Player and the old jQuery UI admin screen. Now describes the HTML5 audio/video player and the React settings UI. Also updated `Requires at least`/`Tested up to`/`Requires PHP` header fields. No code changes.
 

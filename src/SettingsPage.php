@@ -1,4 +1,10 @@
 <?php
+/**
+ * Admin menu page hosting the React settings app.
+ *
+ * @package AutoAttachments
+ */
+
 namespace AutoAttachments;
 
 defined( 'ABSPATH' ) || exit;
@@ -11,15 +17,25 @@ defined( 'ABSPATH' ) || exit;
 class SettingsPage {
 
 	const MENU_SLUG = 'auto_attachments';
-	const HANDLE     = 'auto-attachments-admin';
+	const HANDLE    = 'auto-attachments-admin';
 
-	/** @var string */
+	/**
+	 * Admin page hook suffix, set once add_menu_page() has run.
+	 *
+	 * @var string
+	 */
 	private $hook_suffix = '';
 
+	/**
+	 * Hook menu registration into wp-admin.
+	 */
 	public function register_hooks(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
 	}
 
+	/**
+	 * Add the top-level admin menu page and enqueue its assets.
+	 */
 	public function add_menu_page(): void {
 		$this->hook_suffix = add_menu_page(
 			__( 'Auto Attachments', 'auto-attachments' ),
@@ -33,6 +49,11 @@ class SettingsPage {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
+	/**
+	 * Enqueue the settings app's JS/CSS, only on its own admin page.
+	 *
+	 * @param string $hook Current admin page hook suffix.
+	 */
 	public function enqueue( string $hook ): void {
 		if ( $hook !== $this->hook_suffix ) {
 			return;
@@ -61,6 +82,9 @@ class SettingsPage {
 		);
 	}
 
+	/**
+	 * Render the React app mount point.
+	 */
 	public function render(): void {
 		echo '<div id="auto-attachments-settings-root" class="wrap"></div>';
 	}

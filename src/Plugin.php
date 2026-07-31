@@ -1,4 +1,10 @@
 <?php
+/**
+ * Plugin bootstrap and singleton container.
+ *
+ * @package AutoAttachments
+ */
+
 namespace AutoAttachments;
 
 defined( 'ABSPATH' ) || exit;
@@ -12,13 +18,22 @@ defined( 'ABSPATH' ) || exit;
 class Plugin {
 
 	/**
+	 * Singleton instance.
+	 *
 	 * @var self|null
 	 */
 	private static $instance = null;
 
-	/** @var GalleryRenderer|null */
+	/**
+	 * Shared gallery renderer instance.
+	 *
+	 * @var GalleryRenderer|null
+	 */
 	private $gallery_renderer;
 
+	/**
+	 * Get the shared Plugin instance, creating it on first call.
+	 */
 	public static function instance(): self {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -26,6 +41,9 @@ class Plugin {
 		return self::$instance;
 	}
 
+	/**
+	 * Private constructor - use instance() instead.
+	 */
 	private function __construct() {
 	}
 

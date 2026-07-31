@@ -1,4 +1,10 @@
 <?php
+/**
+ * REST API controller for plugin settings.
+ *
+ * @package AutoAttachments
+ */
+
 namespace AutoAttachments;
 
 defined( 'ABSPATH' ) || exit;
@@ -11,12 +17,18 @@ defined( 'ABSPATH' ) || exit;
 class SettingsRestController {
 
 	const NAMESPACE = 'auto-attachments/v1';
-	const ROUTE      = '/settings';
+	const ROUTE     = '/settings';
 
+	/**
+	 * Hook route registration into the REST API init.
+	 */
 	public function register_hooks(): void {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
+	/**
+	 * Register the GET/POST settings routes.
+	 */
 	public function register_routes(): void {
 		register_rest_route(
 			self::NAMESPACE,
@@ -37,10 +49,16 @@ class SettingsRestController {
 		);
 	}
 
+	/**
+	 * REST permission callback: settings routes require manage_options.
+	 */
 	public function check_permission(): bool {
 		return current_user_can( 'manage_options' );
 	}
 
+	/**
+	 * GET callback: return the schema and current values.
+	 */
 	public function get_settings(): \WP_REST_Response {
 		return new \WP_REST_Response(
 			array(
@@ -50,6 +68,11 @@ class SettingsRestController {
 		);
 	}
 
+	/**
+	 * POST callback: persist any submitted settings fields.
+	 *
+	 * @param \WP_REST_Request $request Incoming REST request.
+	 */
 	public function update_settings( \WP_REST_Request $request ): \WP_REST_Response {
 		$input = array();
 		foreach ( array_keys( Settings::schema() ) as $key ) {
@@ -61,6 +84,9 @@ class SettingsRestController {
 		return new \WP_REST_Response( array( 'values' => Settings::save_from_rest( $input ) ) );
 	}
 
+	/**
+	 * Build the REST `args` validation schema from Settings::schema().
+	 */
 	private function rest_args(): array {
 		$args = array();
 		foreach ( Settings::schema() as $key => $field ) {

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Image attachment gallery renderer.
+ *
+ * @package AutoAttachments
+ */
+
 namespace AutoAttachments;
 
 defined( 'ABSPATH' ) || exit;
@@ -11,14 +17,25 @@ defined( 'ABSPATH' ) || exit;
  */
 class GalleryRenderer {
 
-	/** @var Lightbox */
+	/**
+	 * Lightbox service used for markup/grouping.
+	 *
+	 * @var Lightbox
+	 */
 	private $lightbox;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param Lightbox $lightbox Lightbox service used for markup/grouping.
+	 */
 	public function __construct( Lightbox $lightbox ) {
 		$this->lightbox = $lightbox;
 	}
 
 	/**
+	 * Render a gallery of image attachments.
+	 *
 	 * @param \WP_Post[] $attachments Image attachments to render.
 	 * @param string     $group       Lightbox grouping key (e.g. the post ID);
 	 *                                keep automatic and shortcode galleries in
@@ -26,9 +43,12 @@ class GalleryRenderer {
 	 * @param string     $style       'light' or 'dark' gallery style.
 	 */
 	public function render( array $attachments, string $group, string $style ): string {
-		$attachments = array_filter( $attachments, function ( $attachment ) {
-			return $attachment instanceof \WP_Post;
-		} );
+		$attachments = array_filter(
+			$attachments,
+			function ( $attachment ) {
+				return $attachment instanceof \WP_Post;
+			}
+		);
 
 		if ( empty( $attachments ) ) {
 			return '';
