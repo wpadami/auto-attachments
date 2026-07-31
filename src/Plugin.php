@@ -92,6 +92,7 @@ class Plugin {
 		( new ShortcodePanelAjax() )->register_hooks();
 		( new ShortcodePanel( $repository ) )->register_hooks();
 		( new PageMetaBox() )->register_hooks();
+		( new AttachmentAttacher() )->register_hooks();
 
 		( new SettingsRestController() )->register_hooks();
 		( new SettingsPage() )->register_hooks();
