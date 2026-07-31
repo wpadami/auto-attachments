@@ -4,8 +4,9 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=HFYQE
 Tags: attachments, attachment, zip, rar, tar, tar.gz, mp3, player, flv, mp4, mpg, odf, ods, plugin, documents, excel, files, pdf, spreadsheet, text, word
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Requires at least: 3.0
-Tested up to: 3.5.1
+Requires at least: 5.0
+Tested up to: 7.0
+Requires PHP: 7.4
 Stable tag: trunk
 
 
@@ -13,13 +14,13 @@ This plugin makes your attachments more effective. Supported attachment types: W
 
 == Description ==
 
-Auto Attachments make your attachmens more effective. When you upload an attachment to your article, this plugin detect attachment's type and create a file list and a download area after <code>the_content</code>. And if you add some audio and video files the plugin add a jw player for this file. Plugin works with mp3, ogg, FLV, MP4 and other video & audio types (What supports by JW Player and WordPress)
+Auto Attachments make your attachmens more effective. When you upload an attachment to your article, this plugin detects the attachment's type and creates a file list and a download area after <code>the_content</code>. If you add audio or video files, the plugin plays them inline using WordPress core's HTML5 audio/video player. Plugin works with mp3, ogg, mp4 and other video & audio types supported by WordPress.
 
 **Shortcode Panel Adeed**
 
 **NOTICE**: Please set your thumbnail and big image sizes before uploading new images - changing these sizes doesn't retroactively resize already-uploaded attachments. Read [FAQ](faq/) please
 
-With new admin area (0.5.3 - [look screenshots](screenshots/)) options were groupped with clean, jQuery UI based design. You can control all of plugin's options. You can select JW Player's theme, you can decide downloadble files design, list or grid. Also you can add header titles for video and audio files. You can find a .pot file in languages folder.
+The admin area (rebuilt in 0.11.0 - [look screenshots](screenshots/)) uses WordPress's native React-based settings UI. You can control all of the plugin's options, decide the downloadable files design (list or grid), and add header titles for video and audio files. You can find a .pot file in languages folder.
 
 = Languages Included =
 * Turkish (tr_TR)	(Default)
@@ -66,6 +67,9 @@ Go to Posts (or Pages) -> Create New (or Edit). You will see a new button with a
 4. Kısa Kod Paneli / Shortcode Panel
 
 == Changelog ==
+
+= Version 0.12.1 =
+* Updated stale documentation: the Description and admin-area text still described the removed Flash/JW Player and the old jQuery UI admin screen. Now describes the HTML5 audio/video player and the React settings UI. Also updated `Requires at least`/`Tested up to`/`Requires PHP` header fields. No code changes.
 
 = Version 0.12.0 =
 * Added a block editor block ("Attachment List (Auto Attachments)") for inserting file, image, audio, or video attachment lists - the block-editor equivalent of the `[imageaa]`/`[filesaa]`/`[musicaa]`/`[videoaa]` shortcodes, which keep working unchanged alongside it.

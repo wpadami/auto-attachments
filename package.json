@@ -1,6 +1,6 @@
 {
     "name": "auto-attachments",
-    "version": "0.12.0",
+    "version": "0.12.1",
     "description": "Admin settings UI and block editor build for the Auto Attachments WordPress plugin.",
     "private": true,
     "scripts": {
