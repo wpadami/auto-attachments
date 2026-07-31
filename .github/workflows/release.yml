@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      SLUG: ${{ secrets.SVN_SLUG }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify plugin version matches tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          HEADER_VERSION=$(grep -m1 '^Version:' auto-attachments.php | sed 's/Version: *//')
+          if [ "$VERSION" != "$HEADER_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match plugin header Version: $HEADER_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build admin UI and block
+        run: npm run build
+
+      - name: Install rsync and subversion
+        run: sudo apt-get update -y && sudo apt-get install -y rsync subversion
+
+      - name: Assemble clean plugin directory
+        run: |
+          mkdir -p "dist/$SLUG"
+          rsync -a --exclude-from=.distignore ./ "dist/$SLUG/"
+
+      - name: Create release zip
+        run: |
+          cd dist
+          zip -rq "../${SLUG}.zip" "$SLUG"
+
+      - name: Attach zip to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.SLUG }}.zip
+          generate_release_notes: true
+
+      - name: Deploy to WordPress.org SVN
+        env:
+          SVN_REPO_URL: ${{ secrets.SVN_REPO_URL }}
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          svn checkout --depth immediates "$SVN_REPO_URL" svn-repo
+          svn update --set-depth infinity svn-repo/trunk
+
+          rm -rf svn-repo/trunk/*
+          rsync -a "dist/$SLUG/" svn-repo/trunk/
+
+          mkdir -p "svn-repo/tags/$VERSION"
+          rsync -a "dist/$SLUG/" "svn-repo/tags/$VERSION/"
+
+          cd svn-repo
+          svn add --force . -q
+          svn status | grep '^!' | awk '{print $2}' | xargs -r svn delete
+          svn commit -m "Release $VERSION" --username "$SVN_USERNAME" --password "$SVN_PASSWORD" --non-interactive --no-auth-cache

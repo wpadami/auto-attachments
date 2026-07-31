@@ -62,6 +62,10 @@ Go to **Posts (or Pages)** -> **Create New (or Edit)**. You will see a new **but
 
 ## Changelog
 
+### Version 1.1.0
+* Added `.github/workflows/release.yml`: on every `v*.*.*` tag push, verifies the tag matches the plugin header version, builds the admin UI and block (`npm run build`), assembles a clean plugin package per a new `.distignore` file, attaches a zip to a GitHub Release, and deploys the same package to the WordPress.org SVN repository (trunk + a version tag).
+* `build/` (the compiled admin UI and block assets) is no longer committed to git - it's generated fresh by the release workflow above. Run `npm run build` locally if you need it for manual testing.
+
 ### Version 1.0.0
 First stable release of the modernized plugin: WP 7.0/PHP 8 compatible, Flash-free, security-hardened, React-based settings UI, Gutenberg block, and a full OOP rewrite (see below) - enough cumulative change since the 0.x/2013-era codebase to call this the first 1.0 release rather than another 0.x increment.
 

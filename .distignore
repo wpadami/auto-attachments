@@ -1,0 +1,23 @@
+.git
+.github
+.gitignore
+.distignore
+node_modules
+vendor
+dist
+svn-repo
+composer.json
+composer.lock
+phpcs.xml.dist
+package.json
+package-lock.json
+src/admin
+src/block
+Readme.md
+claude.md
+
+# wp-scripts auto-copies every src/**/block.json it finds into each build
+# entry's own output-path, regardless of which entry triggered the build -
+# these duplicate copies aren't the one PHP actually loads (build/block/block.json).
+build/admin/block
+build/block/block

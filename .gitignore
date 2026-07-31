@@ -168,17 +168,14 @@ claude.md
 composer.lock
 .claude
 
-# Node (build tooling only - build/ output is committed since there's no CI build step yet)
+# Node (build tooling only). build/ (the @wordpress/scripts output) is no
+# longer committed either - .github/workflows/release.yml builds it fresh
+# on every tag push. The generic Python "build" rule above already covers
+# it; run `npm run build` locally when you need it for manual testing.
 /node_modules/
 npm-debug.log*
 
-# The generic Python "build" rule above (leftover boilerplate, unrelated to
-# this plugin) would otherwise swallow our committed @wordpress/scripts
-# output - un-ignore it explicitly.
-!/build/
-!/build/**
-# wp-scripts auto-copies every src/**/block.json it finds into each
-# entry's own output-path, regardless of which entry triggered the build -
-# these duplicate copies aren't the one PHP actually loads (build/block/block.json).
-/build/admin/block/
-/build/block/block/
+# Local release-zip staging (.github/workflows/release.yml), and the
+# WordPress.org SVN checkout it deploys from.
+/dist/
+/svn-repo/
