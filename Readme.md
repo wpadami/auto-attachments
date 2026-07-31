@@ -1,6 +1,6 @@
 # [Auto Attachments] (http://wordpress.org/extend/plugins/auto-attachments/)
 
-**Tags:** attachments, attachment, zip, rar, tar, tar.gz, mp3, player, flv, mp4, mpg, odf, ods, plugin, documents, excel, files, pdf, spreadsheet, text, word<br /> 
+**Tags:** attachments, files, audio, video, gallery<br /> 
 **License:** GPLv2 or later<br /> 
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html<br /> 
 **Requires at least:** 5.0<br /> 
@@ -61,6 +61,10 @@ Go to **Posts (or Pages)** -> **Create New (or Edit)**. You will see a new **but
 ![Yönetim Paneli / Admin Area] (http://s.wordpress.org/extend/plugins/auto-attachments/screenshot-3.png)
 
 ## Changelog
+
+### Version 1.1.1
+* Fixed the classic-editor shortcode-builder dialog: its button did nothing and threw `$(...).dialog is not a function` in the console, because it relied on the jQuery UI "dialog" widget, which WordPress doesn't enqueue by default. Rebuilt on the native HTML `<dialog>` element with plain JS (no jQuery or jQuery UI at all), matching the rest of this plugin's dependency-free modernization.
+* Trimmed the `Tags:` field in readme.txt from 21 entries (WordPress.org only honors the first 5) down to 5, and dropped the redundant "plugin" tag.
 
 ### Version 1.1.0
 * Added `.github/workflows/release.yml`: on every `v*.*.*` tag push, verifies the tag matches the plugin header version, builds the admin UI and block (`npm run build`), assembles a clean plugin package per a new `.distignore` file, attaches a zip to a GitHub Release, and deploys the same package to the WordPress.org SVN repository (trunk + a version tag).

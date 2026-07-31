@@ -10,7 +10,8 @@ namespace AutoAttachments;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Adds a media-button that opens a jQuery UI dialog for building
+ * Adds a media-button that opens a dialog (the native HTML `<dialog>`
+ * element - no jQuery or jQuery UI involved) for building
  * [imageaa]/[filesaa]/[musicaa]/[videoaa] shortcodes from a post's
  * existing attachments, and for excluding those same attachments from the
  * automatic listing (via ShortcodePanelAjax) so they aren't shown twice.
@@ -50,8 +51,8 @@ class ShortcodePanel {
 	public function render_button(): void {
 		$icons_url = plugins_url( '/auto-attachments/includes' );
 		?>
-		<a id="auto_attachments_sh_button" title="<?php esc_attr_e( 'Auto Attachments Shortcodes', 'autoa' ); ?>" class="button-secondary" href="#" style="cursor:pointer;">
-			<img src="<?php echo esc_url( $icons_url . '/images/aamenu.png' ); ?>" alt="<?php esc_attr_e( 'Auto Attachments Shortcodes', 'autoa' ); ?>" style="margin-top:-2px;" />
+		<a id="auto_attachments_sh_button" title="<?php esc_attr_e( 'Auto Attachments Shortcodes', 'autoa' ); ?>" class="button-secondary" href="#" style="display:inline-block;padding:10px;vertical-align:middle;cursor:pointer;">
+			<img src="<?php echo esc_url( $icons_url . '/images/aamenu.png' ); ?>" alt="<?php esc_attr_e( 'Auto Attachments Shortcodes', 'autoa' ); ?>" style="vertical-align:middle;" />
 		</a>
 		<?php
 	}
@@ -67,7 +68,12 @@ class ShortcodePanel {
 
 		$icons_url = plugins_url( '/auto-attachments/includes' );
 		?>
-		<div id="auto_attachments_sh_window" title="<?php esc_attr_e( 'Auto Attachments Shortcodes', 'autoa' ); ?>" style="display: none;">
+		<style>
+			#auto_attachments_sh_window .lnginpt input[type=text] { width: 175px; }
+			#auto_attachments_sh_window select { width: 110px; max-width: 110px; }
+		</style>
+		<dialog id="auto_attachments_sh_window" aria-label="<?php esc_attr_e( 'Auto Attachments Shortcodes', 'autoa' ); ?>" style="position:relative;width:700px;max-width:90vw;max-height:85vh;overflow:auto;padding:20px;">
+			<button type="button" id="auto_attachments_sh_close" class="button" aria-label="<?php esc_attr_e( 'Close', 'autoa' ); ?>" style="position:absolute;top:10px;right:10px;">&times;</button>
 			<div style="background:url(<?php echo esc_url( $icons_url . '/images/32x32aa.png' ); ?>) no-repeat;" class="icon32"></div>
 			<h2><?php esc_html_e( 'Create New Auto Attachments Shortcode', 'autoa' ); ?></h2>
 			<h4>
@@ -124,7 +130,7 @@ class ShortcodePanel {
 					</tr>
 				</tbody>
 			</table>
-		</div>
+		</dialog>
 		<?php
 	}
 
@@ -170,9 +176,10 @@ class ShortcodePanel {
 	}
 
 	/**
-	 * Print the dialog's inline script. $post_id and the nonce are the
-	 * only dynamic values, both server-generated and safe in this
-	 * single-quoted JS string context.
+	 * Print the dialog's inline script - plain JS, no jQuery or jQuery UI
+	 * (the dialog is the native `<dialog>` element). $post_id and the
+	 * nonce are the only dynamic values, both server-generated and safe
+	 * in this single-quoted JS string context.
 	 */
 	public function render_script(): void {
 		$post   = get_post();
@@ -180,73 +187,105 @@ class ShortcodePanel {
 		$nonce  = wp_create_nonce( ShortcodePanelAjax::NONCE_ACTION );
 		?>
 		<script type="text/javascript">
-		jQuery(function ($) {
-			$('.lnginpt input[type=text]').css('width','175px');
-			$('#auto_attachments_sh_window select').css('width','110px','max-width','110px');
+		document.addEventListener('DOMContentLoaded', function () {
+			var POST_ID = <?php echo (int) $postid; ?>;
+			var NONCE = '<?php echo esc_js( $nonce ); ?>';
 
-			$('#auto_attachments_sh_window').dialog({
-				autoOpen: false,
-				width: '700',
-				height: '600',
-				modal: true,
-				draggable: false,
-				resizable: false,
-				closeOnEscape: true
-			});
+			var dialog = document.getElementById('auto_attachments_sh_window');
+			var openButton = document.getElementById('auto_attachments_sh_button');
+			var closeButton = document.getElementById('auto_attachments_sh_close');
 
-			$('#auto_attachments_sh_button').click(function () {
-				$('#auto_attachments_sh_window').dialog('open');
-			});
+			if (!dialog || typeof dialog.showModal !== 'function') {
+				return;
+			}
 
-			function aaLoadSelect(triggerId, targetId) {
-				$(triggerId).on('click', function () {
-					$('.spinneri').show();
-					var data = {
+			if (openButton) {
+				openButton.addEventListener('click', function (event) {
+					event.preventDefault();
+					dialog.showModal();
+				});
+			}
+			if (closeButton) {
+				closeButton.addEventListener('click', function (event) {
+					event.preventDefault();
+					dialog.close();
+				});
+			}
+
+			function setSpinnerVisible(visible) {
+				var spinner = dialog.querySelector('.spinneri');
+				if (spinner) {
+					spinner.style.display = visible ? '' : 'none';
+				}
+			}
+
+			function loadSelect(triggerId, targetId) {
+				var trigger = document.getElementById(triggerId);
+				var target = document.getElementById(targetId);
+				if (!trigger || !target) {
+					return;
+				}
+				trigger.addEventListener('click', function () {
+					setSpinnerVisible(true);
+					var params = new URLSearchParams({
 						action: 'get_imgs',
-						post_id: '<?php echo (int) $postid; ?>',
-						postmim: $(this).attr('tur'),
-						nonce: '<?php echo esc_js( $nonce ); ?>'
-					};
-					$.getJSON(ajaxurl, data, function (response) {
-						$('.spinneri').hide();
-						var cb = '';
-						$.each(response, function (i, tata) {
-							cb += '<option value="' + tata.id + '">' + tata.post_name + '(' + tata.id + ')</option>';
-						});
-						$(targetId + ' option').remove();
-						$(targetId).append(cb);
+						post_id: String(POST_ID),
+						postmim: trigger.getAttribute('tur') || '',
+						nonce: NONCE
 					});
+					fetch(ajaxurl + '?' + params.toString())
+						.then(function (response) { return response.json(); })
+						.then(function (items) {
+							setSpinnerVisible(false);
+							target.innerHTML = '';
+							items.forEach(function (item) {
+								var option = document.createElement('option');
+								option.value = item.id;
+								option.textContent = item.post_name + '(' + item.id + ')';
+								target.appendChild(option);
+							});
+						})
+						.catch(function () { setSpinnerVisible(false); });
 				});
 			}
-			aaLoadSelect('#resgetir', '#simage');
-			aaLoadSelect('#audgetir', '#saudio');
-			aaLoadSelect('#vidgetir', '#svideo');
-			aaLoadSelect('#filegetir', '#sfile');
+			loadSelect('resgetir', 'simage');
+			loadSelect('audgetir', 'saudio');
+			loadSelect('vidgetir', 'svideo');
+			loadSelect('filegetir', 'sfile');
 
-			function aaCreateShortcode(buttonId, inputId, tag) {
-				$(buttonId).on('click', function () {
-					$('.spinneri').show();
-					var ids = $(inputId).val();
-					if (ids !== '') {
-						send_to_editor('[' + tag + ' id=' + ids + ']');
+			function createShortcode(buttonId, inputId, tag) {
+				var button = document.getElementById(buttonId);
+				var input = document.getElementById(inputId);
+				if (!button || !input) {
+					return;
+				}
+				button.addEventListener('click', function () {
+					setSpinnerVisible(true);
+					var ids = input.value;
+					if (ids !== '' && typeof window.send_to_editor === 'function') {
+						window.send_to_editor('[' + tag + ' id=' + ids + ']');
 					}
-					var data = {
+					var body = new URLSearchParams({
 						action: 'ex_aa',
-						durum: $(inputId).attr('durum'),
-						post_id: $(inputId).attr('name'),
+						durum: input.getAttribute('durum') || '',
+						post_id: input.getAttribute('name') || '',
 						post_meta: ids,
-						nonce: '<?php echo esc_js( $nonce ); ?>'
-					};
-					$.post(ajaxurl, data, function () {
-						$('.spinneri').hide();
-						$('#auto_attachments_sh_window').dialog('close');
+						nonce: NONCE
 					});
+					fetch(ajaxurl, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+						body: body.toString()
+					}).then(function () {
+						setSpinnerVisible(false);
+						dialog.close();
+					}).catch(function () { setSpinnerVisible(false); });
 				});
 			}
-			aaCreateShortcode('#rsmadd', '#resids', 'imageaa');
-			aaCreateShortcode('#muzadd', '#muzids', 'musicaa');
-			aaCreateShortcode('#vidadd', '#vidids', 'videoaa');
-			aaCreateShortcode('#dosyadd', '#dosyids', 'filesaa');
+			createShortcode('rsmadd', 'resids', 'imageaa');
+			createShortcode('muzadd', 'muzids', 'musicaa');
+			createShortcode('vidadd', 'vidids', 'videoaa');
+			createShortcode('dosyadd', 'dosyids', 'filesaa');
 		});
 		</script>
 		<?php
