@@ -147,7 +147,8 @@ class ShortcodePanel {
 			echo '<option id="none">' . esc_html( $empty_label ) . '</option>';
 		} else {
 			foreach ( $attachments as $attachment ) {
-				echo '<option id="' . esc_attr( $attachment->ID ) . '">' . esc_html( $attachment->post_name ) . '(' . esc_html( (string) $attachment->ID ) . ')</option>';
+				$label = '(' . $attachment->ID . ') ' . $attachment->post_name;
+				echo '<option id="' . esc_attr( $attachment->ID ) . '" title="' . esc_attr( $label ) . '">' . esc_html( $label ) . '</option>';
 			}
 		}
 		echo '</select>';
@@ -240,8 +241,10 @@ class ShortcodePanel {
 							target.innerHTML = '';
 							items.forEach(function (item) {
 								var option = document.createElement('option');
+								var label = '(' + item.id + ') ' + item.post_name;
 								option.value = item.id;
-								option.textContent = item.post_name + '(' + item.id + ')';
+								option.title = label;
+								option.textContent = label;
 								target.appendChild(option);
 							});
 						})
